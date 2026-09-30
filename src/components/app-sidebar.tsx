@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -135,10 +136,12 @@ function UserMenu({ user }: { user: NonNullable<SidebarUser> }) {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <span className="block text-xs text-muted-foreground">เข้าสู่ระบบด้วย</span>
-          <span className="block truncate text-sm text-foreground">{user.email}</span>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="font-normal">
+            <span className="block text-xs text-muted-foreground">เข้าสู่ระบบด้วย</span>
+            <span className="block truncate text-sm text-foreground">{user.email}</span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href="/my-reservations" />}>การจองของฉัน</DropdownMenuItem>
         <DropdownMenuSeparator />
