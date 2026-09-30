@@ -15,7 +15,8 @@ export async function createSession(userId: number) {
   cookieStore.set(SESSION_COOKIE, String(userId), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production", // ส่ง cookie ผ่าน https เท่านั้นเมื่อใช้งานจริง
+    // ส่ง cookie ผ่าน https เท่านั้นเมื่อเข้าถึงผ่าน https (โดเมนทดสอบเป็น http จึงต้องปิด)
+    secure: (process.env.COOKIE_SECURE ?? "").toLowerCase() === "true",
     path: "/",
     maxAge: 60 * 60 * 24 * 7, // 7 วัน
   });
