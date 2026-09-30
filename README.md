@@ -1,171 +1,106 @@
-# RoomReserve — ระบบจองห้องเรียน มหาวิทยาลัยกรุงเทพ
+# bu-roomreserve
 
-เว็บจองห้องเรียนสำหรับนักศึกษา อาจารย์ และเจ้าหน้าที่ ดูตารางห้องว่างรายวัน เลือกห้องและช่วงเวลา
-แล้วส่งคำขอให้ผู้ดูแลระบบอนุมัติ ทุกบทบาทจองได้เท่ากัน และทุกคำขอต้องผ่านการอนุมัติก่อนใช้ห้อง
+A university classroom reservation system where students, teachers, and staff browse room availability by day, submit booking requests, and an admin approves or rejects each one.
 
-โครงงานประกอบวิชา CS430 ระบบฐานข้อมูล ส่งคู่กับ ER Diagram (ข้อ 3) และ Tables (ข้อ 4)
-ซึ่งอยู่ในโฟลเดอร์ `05_Classroom Reservation Project` ระดับเดียวกับโฟลเดอร์นี้
-ตารางในฐานข้อมูลของเว็บนี้สร้างตามแบบ Tables ทุกคอลัมน์
+## Why it exists
 
-## โครงสร้างฐานข้อมูลและ SQL
+This is coursework for a Database Systems class (CS430), submitted alongside an ER Diagram and a relational schema deliverable. Every table in the SQLite database (`buildings`, `rooms`, `users`, `reservations`) matches that submitted schema exactly, and every screen in the app maps to a real table or relationship — so the app doubles as a working demonstration of the data model. The UI is entirely in Thai.
 
-- `sql/schema.sql` — คำสั่ง CREATE TABLE ทั้ง 4 ตาราง (buildings, rooms, users, reservations) พร้อมคีย์นอกและกฎ ON DELETE
-- `src/lib/db.ts` — ชั้นเข้าถึงฐานข้อมูลด้วย SQL ตรง (node:sqlite) ครบทั้ง 5 คำสั่ง:
-  **CONNECT** (เปิดการเชื่อมต่อ) · **SELECT** (getBuildings, getRooms, getReservations, …) ·
-  **INSERT** (insertReservation, insertUser, insertRoom, insertBuilding) ·
-  **UPDATE** (updateReservationStatus, updateRoom, updateBuilding) ·
-  **DELETE** (deleteRoom, deleteBuilding) — ทุกคำสั่งใช้พารามิเตอร์ `?` กัน SQL Injection
-- `npm run db:reset` — ลบฐานข้อมูล สร้างตารางใหม่จาก sql/schema.sql แล้วเติมข้อมูลตัวอย่าง
+```
+User                        Admin
+ │  browse /availability      │
+ │  pick room + free hour     │
+ │  submit request ───────────┼──► PENDING queue
+ │                            │    approve / reject
+ │  see status:               ▼
+ └── PENDING → APPROVED / REJECTED / CANCELLED
+```
 
-## เทคโนโลยี
+## Features
 
-| ส่วน | ที่ใช้ |
-|---|---|
-| เว็บ | Next.js 16 (App Router) + TypeScript |
-| หน้าตา | shadcn/ui (Base UI) + Tailwind CSS v4 ทุกองค์ประกอบมาจาก shadcn |
-| ฟอนต์ | LINE Seed Sans TH (เก็บในโปรเจกต์ที่ `src/fonts/`) |
-| ฐานข้อมูล | SQLite ผ่าน Prisma ORM 6 (ไฟล์เดียว ไม่ต้องติดตั้ง database server) |
-| ตรวจข้อมูล | Zod (ทุก API ที่รับข้อมูล) |
-| รหัสผ่าน | bcryptjs (เก็บเฉพาะค่า hash) |
+- Room availability grid (rooms x hour slots) for a chosen day; taken hours are unselectable, so conflicting requests are prevented before submit, not rejected after.
+- Booking rules enforced in both UI and API: bookable hours 08:00–20:00, 1-hour slots, duration up to 4 hours, up to 14 days ahead, no past bookings, attendees may not exceed room capacity.
+- Requests never overlap an existing PENDING or APPROVED booking of the same room (writes use `BEGIN IMMEDIATE` transactions so concurrent requests cannot double-book).
+- Every reservation requires admin approval (PENDING → APPROVED / REJECTED). Owners can cancel their own PENDING or APPROVED bookings. PENDING requests that pass their end time display as "expired".
+- Room management for admins: create/edit/delete buildings and rooms (type, capacity, projector, whiteboard, status). Rooms under MAINTENANCE or CLOSED are not bookable.
+- Roles: STUDENT (default for new sign-ups), TEACHER, STAFF, ADMIN. All non-admin roles book with equal priority.
+- Registration and login with bcrypt-hashed passwords and Zod-validated API inputs.
+- Time stored as ISO 8601 text in Asia/Bangkok time.
 
-## วิธีรัน
+## Pages
 
-ต้องมี Node.js 20 ขึ้นไป
+| URL | Purpose | Access |
+|---|---|---|
+| `/` | Landing page with intro, sample calendar, FAQ | Public |
+| `/availability` | Availability grid; click a free hour to book | Public to browse, sign-in to book |
+| `/rooms` , `/rooms/[id]` | Room list and detail with equipment and capacity | Public |
+| `/my-reservations` | Own bookings and their statuses | Signed-in |
+| `/reservations/[id]` | Single booking detail and actions | Signed-in |
+| `/admin` | Pending-request approval queue | ADMIN |
+| `/admin/rooms` | Building/room management | ADMIN |
+
+## API
+
+| Method | Route | Purpose |
+|---|---|---|
+| POST | `/api/auth/register` | Sign up (role STUDENT) |
+| POST | `/api/auth/login` | Sign in |
+| POST | `/api/auth/logout` | Sign out |
+| POST | `/api/reservations` | Create booking request (status PENDING) |
+| PATCH | `/api/reservations/[id]` | Cancel own booking, or approve/reject as ADMIN |
+| POST / PATCH / DELETE | `/api/admin/rooms` | Insert / update / delete buildings and rooms (ADMIN) |
+
+## Requirements
+
+- Node.js 22.13+ (the app and scripts use the built-in `node:sqlite` module; the Docker image uses Node 24)
+- No external database server — SQLite is a single file
+
+## Usage (local development)
 
 ```bash
-npm install          # ติดตั้ง dependencies
-npm run db:setup     # สร้างตารางจาก prisma/schema.prisma แล้วเติมข้อมูลตัวอย่าง
-npm run dev          # เปิดเว็บที่ http://localhost:3000
+npm install          # install dependencies
+npm run db:setup     # create tables from sql/schema.sql and seed demo data
+npm run dev          # run at http://localhost:3000
 ```
 
-ถ้าต้องการล้างข้อมูลแล้วเริ่มใหม่: `npm run db:reset`
-(ข้อมูลตัวอย่างอิงจากวันที่รัน seed จึงมีการจองวันนี้และวันถัดไปให้เห็นเสมอ)
+`npm run db:reset` wipes and recreates the database with fresh seed data (seed reservations are generated relative to the current date). `npm run typecheck` and `npm run lint` are also available.
 
-### บัญชีทดลอง
+### Demo accounts
 
-รหัสผ่านทุกบัญชี: `password123` หรือกดปุ่มบัญชีทดลองในหน้าเข้าสู่ระบบ
+All seeded accounts share the password `password123`.
 
-| บทบาท | อีเมล | ใช้ทดสอบ |
+| Role | Email |
+|---|---|
+| Admin | admin@bu.ac.th |
+| Teacher | teacher@bu.ac.th |
+| Staff | staff@bu.ac.th |
+| Student | student@bu.ac.th |
+
+## Deploy (Docker)
+
+The repo includes a multi-stage `Dockerfile` (Next.js standalone output, non-root user) and a `coolify.yaml` for deployment on Coolify. The container seeds demo data on first start (only when the database is empty) and then starts the server on port 3000. The SQLite file lives in a `/app/data` volume so it survives container recreation.
+
+```bash
+docker build -t bu-roomreserve .
+docker run -p 3000:3000 -v roomreserve-data:/app/data bu-roomreserve
+```
+
+### Environment variables
+
+| Variable | Default | Purpose |
 |---|---|---|
-| ผู้ดูแลระบบ | admin@bu.ac.th | อนุมัติ/ปฏิเสธคำขอที่หน้า "อนุมัติคำขอ" |
-| อาจารย์ | teacher@bu.ac.th | จองห้อง |
-| เจ้าหน้าที่ | staff@bu.ac.th | จองห้อง |
-| นักศึกษา | student@bu.ac.th | มีการจองครบทุกสถานะให้ดูในหน้า "การจองของฉัน" |
+| `DATABASE_PATH` | `prisma/dev.db` (local) / `/app/data/dev.db` (Docker) | SQLite file location |
+| `COOKIE_SECURE` | unset | Set `true` to send the session cookie only over HTTPS |
+| `TZ` | `Asia/Bangkok` (Docker) | Timezone for date handling |
+| `NODE_ENV` | `production` (Docker) | Standard Node environment |
 
-## หน้าต่าง ๆ
+## Security notes
 
-| URL | หน้า | ใครเข้าได้ |
-|---|---|---|
-| `/` | หน้าแรก: แนะนำระบบ ตัวอย่างปฏิทินจองของห้องจริง วิธีใช้งาน และคำถามที่พบบ่อย | ทุกคน |
-| `/availability` | ห้องว่าง: ตารางห้อง × ชั่วโมงของวันที่เลือก กดช่องว่างเพื่อจอง | ทุกคน |
-| `/rooms` | ห้องเรียนทั้งหมด แยกตามอาคาร | ทุกคน |
-| `/rooms/[id]` | จองห้อง: เลือกระยะเวลา → วัน → เวลาเริ่ม → กรอกรายละเอียด | ทุกคน (ส่งคำขอต้องเข้าสู่ระบบ) |
-| `/reservations/[id]` | รายละเอียดการจองหนึ่งรายการ | เจ้าของการจอง และผู้ดูแลระบบ |
-| `/my-reservations` | การจองของฉัน แยกแท็บ กำลังจะถึง / รออนุมัติ / ที่ผ่านมา / ยกเลิก-ไม่อนุมัติ | ผู้ที่เข้าสู่ระบบ |
-| `/admin` | อนุมัติคำขอ เรียงคำขอเก่าสุดก่อน | ผู้ดูแลระบบ |
-| `/login`, `/register` | เข้าสู่ระบบ / สมัครสมาชิก | ทุกคน |
+- Passwords are hashed with bcrypt; only the hash is stored.
+- All SQL uses prepared statements with `?` parameters — no string concatenation of user input.
+- The session is a plain, unsigned cookie holding the user id (httpOnly, SameSite=Lax, 7-day expiry). The code itself notes this is educational, not production-grade auth; a real deployment should use signed sessions (e.g. NextAuth or iron-session).
+- Demo seed data uses fictional accounts only.
 
-## กฎการจอง
+## License
 
-กฎทั้งหมดตรวจซ้ำที่ฝั่งเซิร์ฟเวอร์ (`src/lib/validation.ts` และ `src/app/api/reservations/`) หน้าเว็บตรวจไว้ก่อนเพื่อความสะดวกเท่านั้น
-
-1. จองได้เวลา 08:00–20:00 น. เริ่มและจบตรงต้นชั่วโมง ครั้งละ 1–4 ชั่วโมง
-2. จองล่วงหน้าได้ไม่เกิน 14 วัน และจองช่วงเวลาที่ผ่านไปแล้วไม่ได้
-3. จำนวนผู้เข้าร่วมต้องไม่เกินความจุของห้อง
-4. ห้องที่ปิดปรับปรุงหรือปิดใช้งานจองไม่ได้
-5. ห้ามจองทับ: ช่วงเวลาที่มีคำขอ "รออนุมัติ" หรือ "อนุมัติแล้ว" อยู่ จองซ้ำไม่ได้ (ตอบกลับ 409)
-   การตรวจและการบันทึกอยู่ใน transaction เดียวกัน แม้มีสองคำขอเข้ามาพร้อมกันก็ไม่มีทางซ้อนกัน
-   คำขอที่รอคิวจึงไม่ชนกันเอง ผู้ดูแลระบบอนุมัติได้โดยไม่ต้องตรวจเวลาซ้ำ
-6. ผู้จองยกเลิกได้เฉพาะการจองของตัวเองที่ยังไม่สิ้นสุด ผู้ดูแลระบบอนุมัติ/ปฏิเสธได้เฉพาะคำขอที่รออนุมัติและยังไม่เลยเวลา
-   (กฎข้อนี้เขียนไว้ที่เดียวใน `src/lib/reservation-rules.ts` ใช้ทั้งหน้าเว็บและ API)
-7. คำขอที่ไม่มีใครพิจารณาจนเลยเวลาใช้ห้อง แสดงเป็น "หมดอายุ" (ไม่ได้เก็บเป็นสถานะใหม่ในฐานข้อมูล)
-
-เงื่อนไขการจองทับใช้หลักช่วงเวลาซ้อนกัน `ใหม่.เริ่ม < เดิม.จบ` และ `ใหม่.จบ > เดิม.เริ่ม`
-(ดู `overlaps()` ใน `src/lib/availability.ts`)
-
-สถานะของการจอง:
-
-```
-PENDING (รออนุมัติ) ──อนุมัติ──▶ APPROVED (อนุมัติแล้ว)
-        │                              │
-        ├──ปฏิเสธ──▶ REJECTED           └──ผู้จองยกเลิก──▶ CANCELLED
-        └──ผู้จองยกเลิก──▶ CANCELLED
-```
-
-## จาก ER Diagram สู่ตาราง
-
-`prisma/schema.prisma` คือแบบ Tables (ข้อ 4) ในรูปโค้ด คอมเมนต์ท้ายแต่ละบรรทัดบอกชื่อคอลัมน์ตามแบบ
-
-| Entity / Relationship ใน ER | ตาราง | วิธี map |
-|---|---|---|
-| BUILDING | `buildings` | strong entity → ตาราง, PK `id` |
-| ROOM | `rooms` | strong entity → ตาราง, `room_code` เป็น unique |
-| USER | `users` | strong entity → ตาราง, `email` และ `student_id` เป็น unique |
-| RESERVATION | `reservations` | strong entity → ตาราง |
-| HAS (BUILDING 1:N ROOM) | `rooms.buildingId` | FK ฝั่ง N |
-| FOR_ROOM (ROOM 1:N RESERVATION) | `reservations.roomId` | FK ฝั่ง N |
-| MAKES (USER 1:N RESERVATION) | `reservations.userId` | FK ฝั่ง N |
-| APPROVES (USER 1:N RESERVATION, ไม่บังคับ) | `reservations.approvedById`, `decidedAt` | FK ที่เป็น NULL ได้ + attribute ของความสัมพันธ์ |
-| ค่าที่เลือกได้จำกัด (ประเภทห้อง, สถานะ, บทบาท) | enum `RoomType`, `RoomStatus`, `UserRole`, `ReservationStatus` | domain constraint |
-
-ดัชนี `@@index([roomId, startAt, endAt])` ช่วยให้คำถาม "ห้องนี้มีการจองทับช่วงเวลานี้ไหม" เร็วขึ้น
-ซึ่งเป็นคำถามที่ระบบถามทุกครั้งที่มีคนจอง
-
-## โครงสร้างโค้ด
-
-```
-prisma/
-  schema.prisma                 ตารางและความสัมพันธ์ (ตรงกับแบบ Tables)
-  seed.ts                       ข้อมูลตัวอย่าง: ผู้ใช้ 6 คน อาคาร 3 หลัง ห้อง 11 ห้อง การจอง 21 รายการ
-
-src/app/
-  layout.tsx                    ฟอนต์ LINE Seed Sans TH, ภาษาไทย, ตัวแจ้งเตือน
-  globals.css                   สี ขนาด เงา (design tokens) ของทั้งเว็บ
-  (app)/                        หน้าที่มีเมนูด้านซ้าย
-    layout.tsx                  เมนูด้านซ้าย + ตัวเลขคำขอที่รออนุมัติของผู้ดูแลระบบ
-    availability/page.tsx       ห้องว่าง (ดึงห้องและการจองของวันที่เลือก)
-    rooms/page.tsx              ห้องเรียนทั้งหมด
-    rooms/[id]/page.tsx         จองห้อง (ดึงข้อมูลแล้วส่งให้ Booker)
-    reservations/[id]/page.tsx  รายละเอียดการจอง
-    my-reservations/page.tsx    การจองของฉัน
-    admin/page.tsx              อนุมัติคำขอ
-    error.tsx                   หน้าที่แสดงเมื่อโหลดข้อมูลไม่สำเร็จ
-  (marketing)/                  หน้าแรก (แนะนำระบบ แบบหน้าแรกของ Cal.com)
-  (auth)/                       หน้าเข้าสู่ระบบ / สมัครสมาชิก
-  api/
-    auth/login|logout|register  จัดการ session (cookie)
-    reservations/route.ts       POST สร้างคำขอจอง + ตรวจกฎทั้งหมด
-    reservations/[id]/route.ts  PATCH ยกเลิก / อนุมัติ / ปฏิเสธ
-
-src/components/
-  availability/                 ตารางห้องว่าง, แถบเลือกวันและตัวกรอง, เส้นเวลาปัจจุบัน
-  booker/booker.tsx             หน้าจอง 3 คอลัมน์: ข้อมูลห้อง · ปฏิทิน · ช่วงเวลา
-  booker/room-calendar.tsx      ปฏิทินเลือกวัน (ใช้ทั้งหน้าจองและหน้าแรก)
-  landing/                      ส่วนต่าง ๆ ของหน้าแรก: แถบบน, ตัวอย่างปฏิทิน, ภาพประกอบ, คำถามที่พบบ่อย
-  reservation-list.tsx          รายการการจองจัดกลุ่มตามวัน (ใช้ทั้งหน้าของฉันและหน้าผู้ดูแลระบบ)
-  reservation-actions.tsx       ปุ่มยกเลิก / อนุมัติ / ปฏิเสธ พร้อมกล่องยืนยัน
-  ui/                           คอมโพเนนต์ของ shadcn/ui
-
-src/lib/
-  constants.ts                  เวลาเปิด-ปิด, จองล่วงหน้าได้กี่วัน, ป้ายภาษาไทยของ enum
-  availability.ts               คำนวณช่วงว่าง / การจองทับ (ใช้ทั้งฝั่งหน้าเว็บและเซิร์ฟเวอร์)
-  validation.ts                 Zod schema ของแบบฟอร์มและ API
-  format.ts                     วันที่แบบไทย ปี พ.ศ. เวลา 24 ชั่วโมง
-  reservation-rules.ts          ใครยกเลิก/อนุมัติได้เมื่อไร และสถานะ "หมดอายุ" ที่แสดงบนหน้าเว็บ
-  routes.ts                     สร้างลิงก์ภายในแอป (ห้องว่าง, หน้าจอง, รายละเอียดการจอง)
-  search-params.ts              อ่านค่าจาก URL
-  auth.ts                       อ่านผู้ใช้จาก cookie, บังคับเข้าสู่ระบบ / เฉพาะผู้ดูแลระบบ
-  prisma.ts                     Prisma client ตัวเดียวทั้งแอป
-
-src/instrumentation.ts          ตั้ง time zone ของเซิร์ฟเวอร์เป็น Asia/Bangkok ตอนเริ่มทำงาน
-```
-
-## หมายเหตุ
-
-- ระบบเข้าสู่ระบบเก็บ id ผู้ใช้ไว้ใน cookie แบบ httpOnly ซึ่งพอสำหรับงานในห้องเรียน
-  ถ้าใช้งานจริงควรเปลี่ยนเป็น session ที่เซ็นชื่อหรือเข้ารหัส
-- เวลาทั้งหมดคิดตามเวลาไทย: เซิร์ฟเวอร์ถูกตั้งเป็น Asia/Bangkok ใน `src/instrumentation.ts`
-  จึงบันทึกเวลาการจองถูกต้องแม้รันบนเครื่องที่ตั้งเวลาเป็น UTC
-- ถ้าเก็บโปรเจกต์ไว้บนไดรฟ์ exFAT ของ macOS ให้ดูหมายเหตุใน `next.config.ts`
-  (ปิดแคชบนดิสก์ของ Turbopack ไว้แล้ว)
-- ตรวจโค้ดได้ด้วย `npm run typecheck` และ `npm run lint`
+No license file is present in this repository; all rights are reserved by the repository owner.
