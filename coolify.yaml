@@ -1,0 +1,16 @@
+apiVersion: coolify/v1
+kind: Project
+metadata:
+  name: bu-roomreserve
+  displayName: BU RoomReserve
+spec:
+  runtime: docker
+  services:
+    - name: web
+      type: web
+      port: 3000
+      build:
+        dockerfile: Dockerfile
+      env:
+        NODE_ENV: production
+        TZ: Asia/Bangkok
