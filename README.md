@@ -1,36 +1,171 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RoomReserve — ระบบจองห้องเรียน มหาวิทยาลัยกรุงเทพ
 
-## Getting Started
+เว็บจองห้องเรียนสำหรับนักศึกษา อาจารย์ และเจ้าหน้าที่ ดูตารางห้องว่างรายวัน เลือกห้องและช่วงเวลา
+แล้วส่งคำขอให้ผู้ดูแลระบบอนุมัติ ทุกบทบาทจองได้เท่ากัน และทุกคำขอต้องผ่านการอนุมัติก่อนใช้ห้อง
 
-First, run the development server:
+โครงงานประกอบวิชา CS430 ระบบฐานข้อมูล ส่งคู่กับ ER Diagram (ข้อ 3) และ Tables (ข้อ 4)
+ซึ่งอยู่ในโฟลเดอร์ `05_Classroom Reservation Project` ระดับเดียวกับโฟลเดอร์นี้
+ตารางในฐานข้อมูลของเว็บนี้สร้างตามแบบ Tables ทุกคอลัมน์
+
+## โครงสร้างฐานข้อมูลและ SQL
+
+- `sql/schema.sql` — คำสั่ง CREATE TABLE ทั้ง 4 ตาราง (buildings, rooms, users, reservations) พร้อมคีย์นอกและกฎ ON DELETE
+- `src/lib/db.ts` — ชั้นเข้าถึงฐานข้อมูลด้วย SQL ตรง (node:sqlite) ครบทั้ง 5 คำสั่ง:
+  **CONNECT** (เปิดการเชื่อมต่อ) · **SELECT** (getBuildings, getRooms, getReservations, …) ·
+  **INSERT** (insertReservation, insertUser, insertRoom, insertBuilding) ·
+  **UPDATE** (updateReservationStatus, updateRoom, updateBuilding) ·
+  **DELETE** (deleteRoom, deleteBuilding) — ทุกคำสั่งใช้พารามิเตอร์ `?` กัน SQL Injection
+- `npm run db:reset` — ลบฐานข้อมูล สร้างตารางใหม่จาก sql/schema.sql แล้วเติมข้อมูลตัวอย่าง
+
+## เทคโนโลยี
+
+| ส่วน | ที่ใช้ |
+|---|---|
+| เว็บ | Next.js 16 (App Router) + TypeScript |
+| หน้าตา | shadcn/ui (Base UI) + Tailwind CSS v4 ทุกองค์ประกอบมาจาก shadcn |
+| ฟอนต์ | LINE Seed Sans TH (เก็บในโปรเจกต์ที่ `src/fonts/`) |
+| ฐานข้อมูล | SQLite ผ่าน Prisma ORM 6 (ไฟล์เดียว ไม่ต้องติดตั้ง database server) |
+| ตรวจข้อมูล | Zod (ทุก API ที่รับข้อมูล) |
+| รหัสผ่าน | bcryptjs (เก็บเฉพาะค่า hash) |
+
+## วิธีรัน
+
+ต้องมี Node.js 20 ขึ้นไป
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install          # ติดตั้ง dependencies
+npm run db:setup     # สร้างตารางจาก prisma/schema.prisma แล้วเติมข้อมูลตัวอย่าง
+npm run dev          # เปิดเว็บที่ http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ถ้าต้องการล้างข้อมูลแล้วเริ่มใหม่: `npm run db:reset`
+(ข้อมูลตัวอย่างอิงจากวันที่รัน seed จึงมีการจองวันนี้และวันถัดไปให้เห็นเสมอ)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### บัญชีทดลอง
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+รหัสผ่านทุกบัญชี: `password123` หรือกดปุ่มบัญชีทดลองในหน้าเข้าสู่ระบบ
 
-## Learn More
+| บทบาท | อีเมล | ใช้ทดสอบ |
+|---|---|---|
+| ผู้ดูแลระบบ | admin@bu.ac.th | อนุมัติ/ปฏิเสธคำขอที่หน้า "อนุมัติคำขอ" |
+| อาจารย์ | teacher@bu.ac.th | จองห้อง |
+| เจ้าหน้าที่ | staff@bu.ac.th | จองห้อง |
+| นักศึกษา | student@bu.ac.th | มีการจองครบทุกสถานะให้ดูในหน้า "การจองของฉัน" |
 
-To learn more about Next.js, take a look at the following resources:
+## หน้าต่าง ๆ
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| URL | หน้า | ใครเข้าได้ |
+|---|---|---|
+| `/` | หน้าแรก: แนะนำระบบ ตัวอย่างปฏิทินจองของห้องจริง วิธีใช้งาน และคำถามที่พบบ่อย | ทุกคน |
+| `/availability` | ห้องว่าง: ตารางห้อง × ชั่วโมงของวันที่เลือก กดช่องว่างเพื่อจอง | ทุกคน |
+| `/rooms` | ห้องเรียนทั้งหมด แยกตามอาคาร | ทุกคน |
+| `/rooms/[id]` | จองห้อง: เลือกระยะเวลา → วัน → เวลาเริ่ม → กรอกรายละเอียด | ทุกคน (ส่งคำขอต้องเข้าสู่ระบบ) |
+| `/reservations/[id]` | รายละเอียดการจองหนึ่งรายการ | เจ้าของการจอง และผู้ดูแลระบบ |
+| `/my-reservations` | การจองของฉัน แยกแท็บ กำลังจะถึง / รออนุมัติ / ที่ผ่านมา / ยกเลิก-ไม่อนุมัติ | ผู้ที่เข้าสู่ระบบ |
+| `/admin` | อนุมัติคำขอ เรียงคำขอเก่าสุดก่อน | ผู้ดูแลระบบ |
+| `/login`, `/register` | เข้าสู่ระบบ / สมัครสมาชิก | ทุกคน |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## กฎการจอง
 
-## Deploy on Vercel
+กฎทั้งหมดตรวจซ้ำที่ฝั่งเซิร์ฟเวอร์ (`src/lib/validation.ts` และ `src/app/api/reservations/`) หน้าเว็บตรวจไว้ก่อนเพื่อความสะดวกเท่านั้น
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. จองได้เวลา 08:00–20:00 น. เริ่มและจบตรงต้นชั่วโมง ครั้งละ 1–4 ชั่วโมง
+2. จองล่วงหน้าได้ไม่เกิน 14 วัน และจองช่วงเวลาที่ผ่านไปแล้วไม่ได้
+3. จำนวนผู้เข้าร่วมต้องไม่เกินความจุของห้อง
+4. ห้องที่ปิดปรับปรุงหรือปิดใช้งานจองไม่ได้
+5. ห้ามจองทับ: ช่วงเวลาที่มีคำขอ "รออนุมัติ" หรือ "อนุมัติแล้ว" อยู่ จองซ้ำไม่ได้ (ตอบกลับ 409)
+   การตรวจและการบันทึกอยู่ใน transaction เดียวกัน แม้มีสองคำขอเข้ามาพร้อมกันก็ไม่มีทางซ้อนกัน
+   คำขอที่รอคิวจึงไม่ชนกันเอง ผู้ดูแลระบบอนุมัติได้โดยไม่ต้องตรวจเวลาซ้ำ
+6. ผู้จองยกเลิกได้เฉพาะการจองของตัวเองที่ยังไม่สิ้นสุด ผู้ดูแลระบบอนุมัติ/ปฏิเสธได้เฉพาะคำขอที่รออนุมัติและยังไม่เลยเวลา
+   (กฎข้อนี้เขียนไว้ที่เดียวใน `src/lib/reservation-rules.ts` ใช้ทั้งหน้าเว็บและ API)
+7. คำขอที่ไม่มีใครพิจารณาจนเลยเวลาใช้ห้อง แสดงเป็น "หมดอายุ" (ไม่ได้เก็บเป็นสถานะใหม่ในฐานข้อมูล)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+เงื่อนไขการจองทับใช้หลักช่วงเวลาซ้อนกัน `ใหม่.เริ่ม < เดิม.จบ` และ `ใหม่.จบ > เดิม.เริ่ม`
+(ดู `overlaps()` ใน `src/lib/availability.ts`)
+
+สถานะของการจอง:
+
+```
+PENDING (รออนุมัติ) ──อนุมัติ──▶ APPROVED (อนุมัติแล้ว)
+        │                              │
+        ├──ปฏิเสธ──▶ REJECTED           └──ผู้จองยกเลิก──▶ CANCELLED
+        └──ผู้จองยกเลิก──▶ CANCELLED
+```
+
+## จาก ER Diagram สู่ตาราง
+
+`prisma/schema.prisma` คือแบบ Tables (ข้อ 4) ในรูปโค้ด คอมเมนต์ท้ายแต่ละบรรทัดบอกชื่อคอลัมน์ตามแบบ
+
+| Entity / Relationship ใน ER | ตาราง | วิธี map |
+|---|---|---|
+| BUILDING | `buildings` | strong entity → ตาราง, PK `id` |
+| ROOM | `rooms` | strong entity → ตาราง, `room_code` เป็น unique |
+| USER | `users` | strong entity → ตาราง, `email` และ `student_id` เป็น unique |
+| RESERVATION | `reservations` | strong entity → ตาราง |
+| HAS (BUILDING 1:N ROOM) | `rooms.buildingId` | FK ฝั่ง N |
+| FOR_ROOM (ROOM 1:N RESERVATION) | `reservations.roomId` | FK ฝั่ง N |
+| MAKES (USER 1:N RESERVATION) | `reservations.userId` | FK ฝั่ง N |
+| APPROVES (USER 1:N RESERVATION, ไม่บังคับ) | `reservations.approvedById`, `decidedAt` | FK ที่เป็น NULL ได้ + attribute ของความสัมพันธ์ |
+| ค่าที่เลือกได้จำกัด (ประเภทห้อง, สถานะ, บทบาท) | enum `RoomType`, `RoomStatus`, `UserRole`, `ReservationStatus` | domain constraint |
+
+ดัชนี `@@index([roomId, startAt, endAt])` ช่วยให้คำถาม "ห้องนี้มีการจองทับช่วงเวลานี้ไหม" เร็วขึ้น
+ซึ่งเป็นคำถามที่ระบบถามทุกครั้งที่มีคนจอง
+
+## โครงสร้างโค้ด
+
+```
+prisma/
+  schema.prisma                 ตารางและความสัมพันธ์ (ตรงกับแบบ Tables)
+  seed.ts                       ข้อมูลตัวอย่าง: ผู้ใช้ 6 คน อาคาร 3 หลัง ห้อง 11 ห้อง การจอง 21 รายการ
+
+src/app/
+  layout.tsx                    ฟอนต์ LINE Seed Sans TH, ภาษาไทย, ตัวแจ้งเตือน
+  globals.css                   สี ขนาด เงา (design tokens) ของทั้งเว็บ
+  (app)/                        หน้าที่มีเมนูด้านซ้าย
+    layout.tsx                  เมนูด้านซ้าย + ตัวเลขคำขอที่รออนุมัติของผู้ดูแลระบบ
+    availability/page.tsx       ห้องว่าง (ดึงห้องและการจองของวันที่เลือก)
+    rooms/page.tsx              ห้องเรียนทั้งหมด
+    rooms/[id]/page.tsx         จองห้อง (ดึงข้อมูลแล้วส่งให้ Booker)
+    reservations/[id]/page.tsx  รายละเอียดการจอง
+    my-reservations/page.tsx    การจองของฉัน
+    admin/page.tsx              อนุมัติคำขอ
+    error.tsx                   หน้าที่แสดงเมื่อโหลดข้อมูลไม่สำเร็จ
+  (marketing)/                  หน้าแรก (แนะนำระบบ แบบหน้าแรกของ Cal.com)
+  (auth)/                       หน้าเข้าสู่ระบบ / สมัครสมาชิก
+  api/
+    auth/login|logout|register  จัดการ session (cookie)
+    reservations/route.ts       POST สร้างคำขอจอง + ตรวจกฎทั้งหมด
+    reservations/[id]/route.ts  PATCH ยกเลิก / อนุมัติ / ปฏิเสธ
+
+src/components/
+  availability/                 ตารางห้องว่าง, แถบเลือกวันและตัวกรอง, เส้นเวลาปัจจุบัน
+  booker/booker.tsx             หน้าจอง 3 คอลัมน์: ข้อมูลห้อง · ปฏิทิน · ช่วงเวลา
+  booker/room-calendar.tsx      ปฏิทินเลือกวัน (ใช้ทั้งหน้าจองและหน้าแรก)
+  landing/                      ส่วนต่าง ๆ ของหน้าแรก: แถบบน, ตัวอย่างปฏิทิน, ภาพประกอบ, คำถามที่พบบ่อย
+  reservation-list.tsx          รายการการจองจัดกลุ่มตามวัน (ใช้ทั้งหน้าของฉันและหน้าผู้ดูแลระบบ)
+  reservation-actions.tsx       ปุ่มยกเลิก / อนุมัติ / ปฏิเสธ พร้อมกล่องยืนยัน
+  ui/                           คอมโพเนนต์ของ shadcn/ui
+
+src/lib/
+  constants.ts                  เวลาเปิด-ปิด, จองล่วงหน้าได้กี่วัน, ป้ายภาษาไทยของ enum
+  availability.ts               คำนวณช่วงว่าง / การจองทับ (ใช้ทั้งฝั่งหน้าเว็บและเซิร์ฟเวอร์)
+  validation.ts                 Zod schema ของแบบฟอร์มและ API
+  format.ts                     วันที่แบบไทย ปี พ.ศ. เวลา 24 ชั่วโมง
+  reservation-rules.ts          ใครยกเลิก/อนุมัติได้เมื่อไร และสถานะ "หมดอายุ" ที่แสดงบนหน้าเว็บ
+  routes.ts                     สร้างลิงก์ภายในแอป (ห้องว่าง, หน้าจอง, รายละเอียดการจอง)
+  search-params.ts              อ่านค่าจาก URL
+  auth.ts                       อ่านผู้ใช้จาก cookie, บังคับเข้าสู่ระบบ / เฉพาะผู้ดูแลระบบ
+  prisma.ts                     Prisma client ตัวเดียวทั้งแอป
+
+src/instrumentation.ts          ตั้ง time zone ของเซิร์ฟเวอร์เป็น Asia/Bangkok ตอนเริ่มทำงาน
+```
+
+## หมายเหตุ
+
+- ระบบเข้าสู่ระบบเก็บ id ผู้ใช้ไว้ใน cookie แบบ httpOnly ซึ่งพอสำหรับงานในห้องเรียน
+  ถ้าใช้งานจริงควรเปลี่ยนเป็น session ที่เซ็นชื่อหรือเข้ารหัส
+- เวลาทั้งหมดคิดตามเวลาไทย: เซิร์ฟเวอร์ถูกตั้งเป็น Asia/Bangkok ใน `src/instrumentation.ts`
+  จึงบันทึกเวลาการจองถูกต้องแม้รันบนเครื่องที่ตั้งเวลาเป็น UTC
+- ถ้าเก็บโปรเจกต์ไว้บนไดรฟ์ exFAT ของ macOS ให้ดูหมายเหตุใน `next.config.ts`
+  (ปิดแคชบนดิสก์ของ Turbopack ไว้แล้ว)
+- ตรวจโค้ดได้ด้วย `npm run typecheck` และ `npm run lint`

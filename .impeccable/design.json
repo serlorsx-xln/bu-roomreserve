@@ -1,0 +1,687 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-30T18:00:00.000Z",
+  "title": "Design System: RoomReserve",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Ink Navy",
+        "canonical": "hsl(221 39% 11%)",
+        "tonalRamp": [
+          "hsl(221 39% 15%)",
+          "hsl(221 39% 25%)",
+          "hsl(221 39% 35%)",
+          "hsl(221 39% 45%)",
+          "hsl(221 39% 60%)",
+          "hsl(221 39% 75%)",
+          "hsl(221 39% 88%)",
+          "hsl(221 39% 95%)"
+        ]
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "On Ink",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": [
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 60%)",
+          "hsl(0 0% 75%)",
+          "hsl(0 0% 88%)",
+          "hsl(0 0% 95%)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": [
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 60%)",
+          "hsl(0 0% 75%)",
+          "hsl(0 0% 88%)",
+          "hsl(0 0% 95%)"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Cool Canvas",
+        "canonical": "hsl(210 20% 97%)",
+        "tonalRamp": [
+          "hsl(210 20% 15%)",
+          "hsl(210 20% 25%)",
+          "hsl(210 20% 35%)",
+          "hsl(210 20% 45%)",
+          "hsl(210 20% 60%)",
+          "hsl(210 20% 75%)",
+          "hsl(210 20% 88%)",
+          "hsl(210 20% 95%)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Wash",
+        "canonical": "hsl(220 14% 94%)",
+        "tonalRamp": [
+          "hsl(220 14% 15%)",
+          "hsl(220 14% 25%)",
+          "hsl(220 14% 35%)",
+          "hsl(220 14% 45%)",
+          "hsl(220 14% 60%)",
+          "hsl(220 14% 75%)",
+          "hsl(220 14% 88%)",
+          "hsl(220 14% 95%)"
+        ]
+      },
+      "emphasis": {
+        "role": "neutral",
+        "displayName": "Emphasis Gray",
+        "canonical": "hsl(220 13% 91%)",
+        "tonalRamp": [
+          "hsl(220 13% 15%)",
+          "hsl(220 13% 25%)",
+          "hsl(220 13% 35%)",
+          "hsl(220 13% 45%)",
+          "hsl(220 13% 60%)",
+          "hsl(220 13% 75%)",
+          "hsl(220 13% 88%)",
+          "hsl(220 13% 95%)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Emphasis Ink",
+        "canonical": "hsl(210 30% 4%)",
+        "tonalRamp": [
+          "hsl(210 30% 15%)",
+          "hsl(210 30% 25%)",
+          "hsl(210 30% 35%)",
+          "hsl(210 30% 45%)",
+          "hsl(210 30% 60%)",
+          "hsl(210 30% 75%)",
+          "hsl(210 30% 88%)",
+          "hsl(210 30% 95%)"
+        ]
+      },
+      "body": {
+        "role": "neutral",
+        "displayName": "Body Graphite",
+        "canonical": "hsl(220 6% 25%)",
+        "tonalRamp": [
+          "hsl(220 6% 15%)",
+          "hsl(220 6% 25%)",
+          "hsl(220 6% 35%)",
+          "hsl(220 6% 45%)",
+          "hsl(220 6% 60%)",
+          "hsl(220 6% 75%)",
+          "hsl(220 6% 88%)",
+          "hsl(220 6% 95%)"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Subtle Slate",
+        "canonical": "hsl(220 9% 46%)",
+        "tonalRamp": [
+          "hsl(220 9% 15%)",
+          "hsl(220 9% 25%)",
+          "hsl(220 9% 35%)",
+          "hsl(220 9% 45%)",
+          "hsl(220 9% 60%)",
+          "hsl(220 9% 75%)",
+          "hsl(220 9% 88%)",
+          "hsl(220 9% 95%)"
+        ]
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Faint Slate",
+        "canonical": "hsl(218 11% 65%)",
+        "tonalRamp": [
+          "hsl(218 11% 15%)",
+          "hsl(218 11% 25%)",
+          "hsl(218 11% 35%)",
+          "hsl(218 11% 45%)",
+          "hsl(218 11% 60%)",
+          "hsl(218 11% 75%)",
+          "hsl(218 11% 88%)",
+          "hsl(218 11% 95%)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(220 13% 91%)",
+        "tonalRamp": [
+          "hsl(220 13% 15%)",
+          "hsl(220 13% 25%)",
+          "hsl(220 13% 35%)",
+          "hsl(220 13% 45%)",
+          "hsl(220 13% 60%)",
+          "hsl(220 13% 75%)",
+          "hsl(220 13% 88%)",
+          "hsl(220 13% 95%)"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Field Stroke",
+        "canonical": "hsl(216 12% 84%)",
+        "tonalRamp": [
+          "hsl(216 12% 15%)",
+          "hsl(216 12% 25%)",
+          "hsl(216 12% 35%)",
+          "hsl(216 12% 45%)",
+          "hsl(216 12% 60%)",
+          "hsl(216 12% 75%)",
+          "hsl(216 12% 88%)",
+          "hsl(216 12% 95%)"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Strong Edge",
+        "canonical": "hsl(218 11% 65%)",
+        "tonalRamp": [
+          "hsl(218 11% 15%)",
+          "hsl(218 11% 25%)",
+          "hsl(218 11% 35%)",
+          "hsl(218 11% 45%)",
+          "hsl(218 11% 60%)",
+          "hsl(218 11% 75%)",
+          "hsl(218 11% 88%)",
+          "hsl(218 11% 95%)"
+        ]
+      },
+      "attention": {
+        "role": "semantic",
+        "displayName": "Attention Apricot",
+        "canonical": "hsl(34 100% 92%)",
+        "tonalRamp": [
+          "hsl(34 100% 15%)",
+          "hsl(34 100% 25%)",
+          "hsl(34 100% 35%)",
+          "hsl(34 100% 45%)",
+          "hsl(34 100% 60%)",
+          "hsl(34 100% 75%)",
+          "hsl(34 100% 88%)",
+          "hsl(34 100% 95%)"
+        ]
+      },
+      "attention-foreground": {
+        "role": "semantic",
+        "displayName": "Attention Apricot Text",
+        "canonical": "hsl(15 79% 34%)",
+        "tonalRamp": [
+          "hsl(15 79% 15%)",
+          "hsl(15 79% 25%)",
+          "hsl(15 79% 35%)",
+          "hsl(15 79% 45%)",
+          "hsl(15 79% 60%)",
+          "hsl(15 79% 75%)",
+          "hsl(15 79% 88%)",
+          "hsl(15 79% 95%)"
+        ]
+      },
+      "attention-border": {
+        "role": "semantic",
+        "displayName": "Attention Apricot Edge",
+        "canonical": "hsl(32 98% 83%)",
+        "tonalRamp": [
+          "hsl(32 98% 15%)",
+          "hsl(32 98% 25%)",
+          "hsl(32 98% 35%)",
+          "hsl(32 98% 45%)",
+          "hsl(32 98% 60%)",
+          "hsl(32 98% 75%)",
+          "hsl(32 98% 88%)",
+          "hsl(32 98% 95%)"
+        ]
+      },
+      "success": {
+        "role": "semantic",
+        "displayName": "Mint",
+        "canonical": "hsl(167 54% 93%)",
+        "tonalRamp": [
+          "hsl(167 54% 15%)",
+          "hsl(167 54% 25%)",
+          "hsl(167 54% 35%)",
+          "hsl(167 54% 45%)",
+          "hsl(167 54% 60%)",
+          "hsl(167 54% 75%)",
+          "hsl(167 54% 88%)",
+          "hsl(167 54% 95%)"
+        ]
+      },
+      "success-foreground": {
+        "role": "semantic",
+        "displayName": "Mint Text",
+        "canonical": "hsl(150 84% 22%)",
+        "tonalRamp": [
+          "hsl(150 84% 15%)",
+          "hsl(150 84% 25%)",
+          "hsl(150 84% 35%)",
+          "hsl(150 84% 45%)",
+          "hsl(150 84% 60%)",
+          "hsl(150 84% 75%)",
+          "hsl(150 84% 88%)",
+          "hsl(150 84% 95%)"
+        ]
+      },
+      "error": {
+        "role": "semantic",
+        "displayName": "Blush",
+        "canonical": "hsl(0 93% 94%)",
+        "tonalRamp": [
+          "hsl(0 93% 15%)",
+          "hsl(0 93% 25%)",
+          "hsl(0 93% 35%)",
+          "hsl(0 93% 45%)",
+          "hsl(0 93% 60%)",
+          "hsl(0 93% 75%)",
+          "hsl(0 93% 88%)",
+          "hsl(0 93% 95%)"
+        ]
+      },
+      "error-foreground": {
+        "role": "semantic",
+        "displayName": "Blush Text",
+        "canonical": "hsl(0 63% 31%)",
+        "tonalRamp": [
+          "hsl(0 63% 15%)",
+          "hsl(0 63% 25%)",
+          "hsl(0 63% 35%)",
+          "hsl(0 63% 45%)",
+          "hsl(0 63% 60%)",
+          "hsl(0 63% 75%)",
+          "hsl(0 63% 88%)",
+          "hsl(0 63% 95%)"
+        ]
+      },
+      "destructive": {
+        "role": "semantic",
+        "displayName": "Signal Red",
+        "canonical": "hsl(0 72% 51%)",
+        "tonalRamp": [
+          "hsl(0 72% 15%)",
+          "hsl(0 72% 25%)",
+          "hsl(0 72% 35%)",
+          "hsl(0 72% 45%)",
+          "hsl(0 72% 60%)",
+          "hsl(0 72% 75%)",
+          "hsl(0 72% 88%)",
+          "hsl(0 72% 95%)"
+        ]
+      },
+      "now": {
+        "role": "semantic",
+        "displayName": "Now Red",
+        "canonical": "hsl(0 84% 60%)",
+        "tonalRamp": [
+          "hsl(0 84% 15%)",
+          "hsl(0 84% 25%)",
+          "hsl(0 84% 35%)",
+          "hsl(0 84% 45%)",
+          "hsl(0 84% 60%)",
+          "hsl(0 84% 75%)",
+          "hsl(0 84% 88%)",
+          "hsl(0 84% 95%)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Room code heading in the booker; the largest size on app surfaces."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section and pane headings, board date trigger."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Working size for nav, lists, controls, fields."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Grid headers, metadata, legend, captions, reservation blocks."
+      },
+      "marketing-display": {
+        "displayName": "Marketing Display",
+        "purpose": "Hero H1 from md (CSS --text-display). Marketing surface only."
+      },
+      "marketing-display-md": {
+        "displayName": "Marketing Display Medium",
+        "purpose": "Section and CTA titles from md (CSS --text-display-md). Marketing surface only."
+      },
+      "marketing-display-sm": {
+        "displayName": "Marketing Display Small",
+        "purpose": "Hero H1 below md (CSS --text-display-sm). Marketing surface only."
+      },
+      "marketing-heading": {
+        "displayName": "Marketing Heading",
+        "purpose": "Section and CTA titles below md (CSS --text-heading). Marketing surface only."
+      },
+      "marketing-lead": {
+        "displayName": "Marketing Lead",
+        "purpose": "Hero and section subtitles (400) and marketing card titles (700)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "button-solid",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.08), 0 1px 1px 0 rgb(0 0 0 / 0.06), inset 0 2px 0.4px 0 rgb(255 255 255 / 0.12), inset 0 -3px 2px 0 rgb(0 0 0 / 0.04)",
+        "purpose": "Resting near-flat lift on primary and destructive buttons, app-wide; no wide outer drop."
+      },
+      {
+        "name": "button-solid-hover",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.1), 0 1px 1px 0 rgb(0 0 0 / 0.08), inset 0 -3px 2px 0 rgb(0 0 0 / 0.1), inset 0 2px 0.4px 0 rgb(255 255 255 / 0.24)",
+        "purpose": "Primary button hover."
+      },
+      {
+        "name": "button-solid-active",
+        "value": "inset 0 3px 1px 0 rgb(0 0 0 / 0.1), inset 0 0 2px 0 rgb(0 0 0 / 0.1)",
+        "purpose": "Primary button pressed."
+      },
+      {
+        "name": "button-outline",
+        "value": "0 2px 3px 0 rgb(0 0 0 / 0.03), 0 2px 2px -1px rgb(0 0 0 / 0.03)",
+        "purpose": "Outline buttons and outline toggles."
+      },
+      {
+        "name": "dropdown",
+        "value": "0 5px 20px 0 rgb(0 0 0 / 0.1), 0 10px 40px 0 rgb(0 0 0 / 0.03)",
+        "purpose": "Toast and floating layers."
+      },
+      {
+        "name": "elevation-low",
+        "value": "0 1px 1px 0 rgb(0 0 0 / 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.08), 0 2px 2px 0 rgb(0 0 0 / 0.1), 0 0 8px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Selected item of a segmented control (marketing hero duration picker)."
+      },
+      {
+        "name": "card",
+        "value": "0 1px 5px -4px rgb(19 19 22 / 0.7), 0 0 0 1px rgb(34 42 53 / 0.08), 0 4px 8px 0 rgb(34 42 53 / 0.05)",
+        "purpose": "Marketing surface only: hero, CTA, step, feature and FAQ cards, the scrolled header, and one focal item per illustration."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 3px hsl(218 11% 65% / 0.5)",
+        "purpose": "Focus-visible on buttons and fields."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": "150ms (color, background-color, border-color, box-shadow)",
+        "purpose": "Button state changes."
+      },
+      {
+        "name": "cell-hover",
+        "value": "100ms color transition",
+        "purpose": "Free board cells revealing their hour."
+      },
+      {
+        "name": "pane-enter",
+        "value": "200ms fade-in with 4-8px slide",
+        "purpose": "Booker time list and request form entering."
+      },
+      {
+        "name": "header-morph",
+        "value": "300ms ease-out (background-color, border-color, box-shadow)",
+        "purpose": "Marketing header turning from transparent into the floating white bar after 8px of scroll."
+      }
+    ],
+    "patterns": [
+      {
+        "name": "pending-stripes",
+        "value": "background-color: hsl(34 100% 92%); background-image: repeating-linear-gradient(135deg, transparent 0 6px, hsl(32 98% 83% / 0.55) 6px 8px)",
+        "purpose": "Pending reservation blocks only."
+      },
+      {
+        "name": "board-grid",
+        "value": "background-image: linear-gradient(to right, hsl(220 13% 91%) 1px, transparent 1px), linear-gradient(to bottom, hsl(220 13% 91%) 1px, transparent 1px); background-size: 5rem 3.5rem; background-position: center; mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, transparent 25%, black 80%)",
+        "purpose": "Faint hour grid behind the marketing closing CTA only."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ],
+    "layout": [
+      {
+        "name": "marketing-frame",
+        "value": "min(75rem, 100% - 1.5rem)",
+        "purpose": "Marketing page frame with hairline vertical guides; full-bleed section rules with + marks at the guides."
+      },
+      {
+        "name": "marketing-content",
+        "value": "1048px (69.5rem box, 32px side padding; 24px on phones)",
+        "purpose": "Section content column."
+      },
+      {
+        "name": "marketing-inset-card",
+        "value": "73.5rem max, 12px inset from the guides",
+        "purpose": "Hero and CTA cards."
+      },
+      {
+        "name": "marketing-header",
+        "value": "72rem max, 56px tall, sticky 8px from top",
+        "purpose": "Transparent at top, floating bordered white bar on scroll; links move into a เมนู dropdown below md."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Near-black committing action with a near-flat Cal.com lift; one per region.",
+      "html": "<button class=\"ds-btn-primary\">ส่งคำขอจอง</button>",
+      "css": ".ds-btn-primary{font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:14px;line-height:22px;height:36px;padding:0 14px;border-radius:6px;border:1px solid transparent;background:hsl(221 39% 11%);color:#fff;cursor:pointer;box-shadow:0 1px 2px 0 rgb(0 0 0/.08),0 1px 1px 0 rgb(0 0 0/.06),inset 0 2px .4px 0 rgb(255 255 255/.12),inset 0 -3px 2px 0 rgb(0 0 0/.04);transition:background-color 150ms,box-shadow 150ms}.ds-btn-primary:hover{background:hsl(221 39% 11%/.92);box-shadow:0 1px 2px 0 rgb(0 0 0/.1),0 1px 1px 0 rgb(0 0 0/.08),inset 0 -3px 2px 0 rgb(0 0 0/.1),inset 0 2px .4px 0 rgb(255 255 255/.24)}.ds-btn-primary:active{box-shadow:inset 0 3px 1px 0 rgb(0 0 0/.1),inset 0 0 2px 0 rgb(0 0 0/.1)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 3px hsl(218 11% 65%/.5)}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "White secondary action with a field-stroke edge; toolbars, paging, time slots.",
+      "html": "<button class=\"ds-btn-outline\">วันนี้</button>",
+      "css": ".ds-btn-outline{font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:14px;line-height:22px;height:36px;padding:0 14px;border-radius:6px;border:1px solid hsl(216 12% 84%);background:#fff;color:hsl(210 30% 4%);cursor:pointer;box-shadow:0 2px 3px 0 rgb(0 0 0/.03),0 2px 2px -1px rgb(0 0 0/.03);transition:background-color 150ms,border-color 150ms}.ds-btn-outline:hover{background:hsl(210 20% 97%);border-color:hsl(218 11% 65%)}.ds-btn-outline:focus-visible{outline:none;border-color:hsl(218 11% 65%);box-shadow:0 0 0 3px hsl(218 11% 65%/.5)}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Muted Wash fill, no shadow; the full-width second action in the marketing hero.",
+      "html": "<button class=\"ds-btn-secondary\">สมัครสมาชิกด้วยอีเมล <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:320px;font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:14px;line-height:22px;height:36px;padding:0 14px;border-radius:6px;border:1px solid transparent;background:hsl(220 14% 94%);color:hsl(210 30% 4%);cursor:pointer;transition:background-color 150ms}.ds-btn-secondary:hover{background:hsl(220 13% 91%)}.ds-btn-secondary:focus-visible{outline:none;border-color:hsl(218 11% 65%);box-shadow:0 0 0 3px hsl(218 11% 65%/.5)}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Borderless back/cancel action.",
+      "html": "<button class=\"ds-btn-ghost\">ย้อนกลับ</button>",
+      "css": ".ds-btn-ghost{font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:14px;height:36px;padding:0 14px;border-radius:6px;border:1px solid transparent;background:transparent;color:hsl(220 6% 25%);cursor:pointer;transition:background-color 150ms,color 150ms}.ds-btn-ghost:hover{background:hsl(220 14% 94%);color:hsl(210 30% 4%)}.ds-btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 3px hsl(218 11% 65%/.5)}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Label above, hint below, hairline field.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">จำนวนผู้เข้าร่วม</span><input class=\"ds-input\" placeholder=\"1–25\"><span class=\"ds-field-hint\">ห้องนี้รองรับได้สูงสุด 25 คน</span></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:8px;font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;width:280px}.ds-field-label{font-size:14px;color:hsl(210 30% 4%)}.ds-field-hint{font-size:14px;color:hsl(220 9% 46%)}.ds-input{font-family:inherit;font-size:14px;height:32px;padding:4px 10px;border-radius:6px;border:1px solid hsl(216 12% 84%);background:transparent;color:hsl(210 30% 4%);outline:none;transition:border-color 150ms,box-shadow 150ms}.ds-input::placeholder{color:hsl(220 9% 46%)}.ds-input:focus-visible{border-color:hsl(218 11% 65%);box-shadow:0 0 0 3px hsl(218 11% 65%/.5)}"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Text-only nav on the canvas sidebar; active fills Emphasis Gray.",
+      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-brand\">RoomReserve<small>ระบบจองห้องเรียน</small></div><a class=\"ds-nav-item is-active\" href=\"#\">ห้องว่าง</a><a class=\"ds-nav-item\" href=\"#\">ห้องเรียนทั้งหมด</a><a class=\"ds-nav-item\" href=\"#\">การจองของฉัน</a></nav>",
+      "css": ".ds-nav{display:flex;flex-direction:column;gap:2px;width:240px;padding:12px 8px;background:hsl(210 20% 97%);font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif}.ds-nav-brand{padding:8px 8px 12px;font-size:15px;font-weight:700;letter-spacing:-.025em;color:hsl(210 30% 4%)}.ds-nav-brand small{display:block;font-size:12px;font-weight:400;letter-spacing:0;color:hsl(220 9% 46%)}.ds-nav-item{display:flex;align-items:center;height:36px;padding:0 10px;border-radius:6px;font-size:14px;color:hsl(220 6% 25%);text-decoration:none}.ds-nav-item:hover{background:hsl(220 13% 91%);color:hsl(210 30% 4%)}.ds-nav-item.is-active{background:hsl(220 13% 91%);color:hsl(210 30% 4%)}.ds-nav-item:focus-visible{outline:none;box-shadow:0 0 0 2px hsl(218 11% 65%)}"
+    },
+    {
+      "name": "Status Badges",
+      "kind": "chip",
+      "refersTo": "status-pending",
+      "description": "Reservation status in tint plus Thai word.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-pending\">รออนุมัติ</span><span class=\"ds-badge ds-approved\">อนุมัติแล้ว</span><span class=\"ds-badge ds-rejected\">ถูกปฏิเสธ</span><span class=\"ds-badge ds-cancelled\">ยกเลิกแล้ว</span></div>",
+      "css": ".ds-badges{display:flex;gap:8px;font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif}.ds-badge{display:inline-flex;align-items:center;height:20px;padding:0 6px;border-radius:4.8px;font-size:12px;font-weight:700}.ds-pending{background:hsl(34 100% 92%);color:hsl(15 79% 34%)}.ds-approved{background:hsl(167 54% 93%);color:hsl(150 84% 22%)}.ds-rejected{background:hsl(0 93% 94%);color:hsl(0 63% 31%)}.ds-cancelled{background:hsl(220 14% 94%);color:hsl(220 9% 46%)}"
+    },
+    {
+      "name": "Board Reservation Tones",
+      "kind": "custom",
+      "refersTo": "slot-pending",
+      "description": "The four fixed tones of the availability board: mine, pending (striped), approved, past; free is white.",
+      "html": "<div class=\"ds-tones\"><div class=\"ds-slot ds-free\">14:00</div><div class=\"ds-slot ds-mine\"><b>ประชุมกลุ่ม</b><span>14:00–17:00 · การจองของคุณ</span></div><div class=\"ds-slot ds-pend\"><b>ประชุมภาควิชา</b><span>10:00–12:00 · รออนุมัติ</span></div><div class=\"ds-slot ds-appr\"><b>สอนวิชา CS430</b><span>09:00–12:00 · อนุมัติแล้ว</span></div><div class=\"ds-slot ds-past\">08:00</div></div>",
+      "css": ".ds-tones{display:flex;gap:6px;font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:12px;line-height:18px}.ds-slot{display:flex;flex-direction:column;justify-content:center;height:48px;min-width:72px;padding:0 8px;border-radius:4.8px}.ds-slot b{font-weight:700}.ds-slot span{opacity:.8}.ds-free{align-items:center;background:#fff;color:hsl(220 6% 25%);box-shadow:inset 0 0 0 1px hsl(216 12% 84%)}.ds-free:hover{background:hsl(210 20% 97%)}.ds-mine{background:hsl(221 39% 11%);color:#fff}.ds-pend{background-color:hsl(34 100% 92%);background-image:repeating-linear-gradient(135deg,transparent 0 6px,hsl(32 98% 83%/.55) 6px 8px);color:hsl(15 79% 34%);box-shadow:inset 0 0 0 1px hsl(32 98% 83%)}.ds-appr{background:hsl(220 13% 91%);color:hsl(220 6% 25%)}.ds-past{align-items:center;background:hsl(210 20% 97%);color:hsl(218 11% 65%);box-shadow:inset 0 0 0 1px hsl(220 13% 91%)}"
+    },
+    {
+      "name": "List Container",
+      "kind": "card",
+      "description": "App surfaces: bordered white container on canvas with a canvas group band and hairline-divided rows; no shadow.",
+      "html": "<div class=\"ds-list\"><div class=\"ds-list-head\">กำลังจะมาถึง</div><div class=\"ds-row\"><div><b>พฤ. 1 ต.ค. 2569</b><span>14:00–17:00 น.</span></div><div><b>ประชุมกลุ่มโปรเจกต์</b><span>IF-5T201 · อาคารวิทยาการสารสนเทศ</span></div></div></div>",
+      "css": ".ds-list{width:520px;overflow:hidden;border:1px solid hsl(220 13% 91%);border-radius:6px;background:#fff;font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:14px;line-height:22px}.ds-list-head{padding:8px 20px;background:hsl(210 20% 97%);border-bottom:1px solid hsl(220 13% 91%);font-size:12px;font-weight:700;color:hsl(220 9% 46%)}.ds-row{display:flex;gap:24px;padding:16px 20px}.ds-row b{display:block;font-weight:700;color:hsl(210 30% 4%)}.ds-row span{display:block;color:hsl(220 6% 25%);font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Toast",
+      "kind": "custom",
+      "refersTo": "toast",
+      "description": "Dark bottom-center toast, words only.",
+      "html": "<div class=\"ds-toast\">ส่งคำขอจองแล้ว<small>สถานะ: รออนุมัติ</small></div>",
+      "css": ".ds-toast{display:inline-block;padding:12px 16px;border-radius:6px;background:hsl(221 39% 11%);color:#fff;font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;font-size:14px;box-shadow:0 5px 20px 0 rgb(0 0 0/.1),0 10px 40px 0 rgb(0 0 0/.03)}.ds-toast small{display:block;font-size:14px;color:rgb(255 255 255/.75)}"
+    },
+    {
+      "name": "Marketing Header",
+      "kind": "nav",
+      "refersTo": "marketing-header-scrolled",
+      "description": "Marketing header in its scrolled state: floating white bar, hairline border, card ring. Transparent at the top of the page.",
+      "html": "<header class=\"ds-mh\"><span class=\"ds-mh-brand\">RoomReserve</span><nav class=\"ds-mh-nav\"><a href=\"#\">ห้องว่าง</a><a href=\"#\">ห้องเรียนทั้งหมด</a><a href=\"#\">วิธีใช้งาน</a><a href=\"#\">คำถามที่พบบ่อย</a></nav><a class=\"ds-mh-link\" href=\"#\">เข้าสู่ระบบ</a><a class=\"ds-mh-cta\" href=\"#\">สมัครสมาชิก <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></a></header>",
+      "css": ".ds-mh{display:flex;align-items:center;gap:16px;width:880px;height:56px;padding:0 28px;border:1px solid hsl(220 13% 91%);border-radius:12px;background:#fff;box-shadow:0 1px 5px -4px rgb(19 19 22/.7),0 0 0 1px rgb(34 42 53/.08),0 4px 8px 0 rgb(34 42 53/.05);font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif;transition:background-color 300ms ease-out,border-color 300ms ease-out,box-shadow 300ms ease-out}.ds-mh-brand{font-size:20px;font-weight:700;letter-spacing:-.025em;color:hsl(210 30% 4%)}.ds-mh-nav{display:flex;gap:4px;margin:0 auto}.ds-mh-nav a{padding:0 12px;font-size:16px;line-height:32px;color:hsl(220 6% 25%);text-decoration:none;border-radius:4.8px}.ds-mh-nav a:hover{color:hsl(210 30% 4%)}.ds-mh-nav a:focus-visible,.ds-mh-link:focus-visible{outline:none;box-shadow:0 0 0 3px hsl(218 11% 65%/.5)}.ds-mh-link{padding:0 12px;font-size:14px;line-height:32px;color:hsl(210 30% 4%);text-decoration:none;border-radius:4.8px}.ds-mh-link:hover{background:hsl(220 14% 94%)}.ds-mh-cta{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:4.8px;background:hsl(221 39% 11%);color:#fff;font-size:14px;text-decoration:none;box-shadow:0 1px 2px 0 rgb(0 0 0/.08),0 1px 1px 0 rgb(0 0 0/.06),inset 0 2px .4px 0 rgb(255 255 255/.12),inset 0 -3px 2px 0 rgb(0 0 0/.04)}.ds-mh-cta:hover{background:hsl(221 39% 11%/.92)}"
+    },
+    {
+      "name": "Marketing Step Card",
+      "kind": "card",
+      "refersTo": "marketing-content-card",
+      "description": "Marketing content card: card ring, 16px corners, text on top, an inert real-component illustration bleeding off the edge; step chip only where order matters.",
+      "html": "<div class=\"ds-mc\"><div class=\"ds-mc-text\"><span class=\"ds-mc-chip\">02</span><h3>เลือกเวลาแล้วส่งคำขอ</h3><p>เลือกระยะเวลาและเวลาเริ่ม บอกวัตถุประสงค์และจำนวนผู้เข้าร่วม แล้วกดส่ง</p></div><div class=\"ds-mc-art\"><div class=\"ds-mc-win\"><span class=\"ds-mc-slot\">09:00</span><span class=\"ds-mc-slot is-on\">10:00</span><span class=\"ds-mc-taken\"><span>11:00</span><small>มีการจองแล้ว</small></span></div></div></div>",
+      "css": ".ds-mc{display:flex;flex-direction:column;width:340px;height:360px;overflow:hidden;border-radius:16px;background:#fff;box-shadow:0 1px 5px -4px rgb(19 19 22/.7),0 0 0 1px rgb(34 42 53/.08),0 4px 8px 0 rgb(34 42 53/.05);font-family:var(--font-line-seed, 'LINE Seed Sans TH'), ui-sans-serif, system-ui, sans-serif}.ds-mc-text{padding:24px}.ds-mc-chip{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:4.8px;background:hsl(220 14% 94%);color:hsl(220 9% 46%);font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}.ds-mc h3{margin:16px 0 0;font-size:18px;line-height:28px;font-weight:700;color:hsl(210 30% 4%)}.ds-mc p{margin:6px 0 0;font-size:16px;line-height:26px;color:hsl(220 9% 46%)}.ds-mc-art{position:relative;flex:1}.ds-mc-win{position:absolute;top:8px;left:24px;right:-40px;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px;border:1px solid hsl(220 13% 91%);border-radius:6px;background:#fff}.ds-mc-slot{display:flex;align-items:center;justify-content:center;height:36px;border:1px solid hsl(216 12% 84%);border-radius:6px;font-size:14px;color:hsl(210 30% 4%);font-variant-numeric:tabular-nums}.ds-mc-slot.is-on{background:hsl(221 39% 11%);border-color:transparent;color:#fff}.ds-mc-taken{grid-column:span 2;display:flex;align-items:center;justify-content:space-between;height:36px;padding:0 12px;border:1px dashed hsl(220 13% 91%);border-radius:6px;font-size:14px;color:hsl(220 9% 46%)}.ds-mc-taken small{font-size:12px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Scheduling Standard",
+    "overview": "RoomReserve is the category standard for booking, executed at full craft: Cal.com's neutral scheduling system applied to university rooms. There is no metaphor and no brand flourish. White working surfaces sit on a cool off-white canvas, hairline gray borders do the structuring, text steps down through four grays, and a single near-black carries every primary action and every \"this is yours\" state. The quality bar is Cal.com, followed closely in conventions and craft, never in logo, name, imagery, or copy.\n\nThe product has two surfaces on one token set. The **app surfaces** (availability board, rooms, booker, my reservations, admin, auth) have the density of a working tool: the availability board at `/availability` is a bordered rooms by hours grid, the booker is a three-column scheduling layout, and lists are divided rows inside one bordered container. Everything is text-first Thai with LINE Seed Sans TH at two weights; hierarchy comes from weight, gray step, and position, never from color or decoration. All UI is built from shadcn/ui (Base UI variant) primitives restyled with these tokens.\n\nThe **marketing surface** (the landing page at `/`) follows the anatomy of Cal.com's homepage. It sits on the same Cool Canvas inside a 1200px frame of hairline guides. White cards carry Cal's ring-and-soft-shadow, headings are set large, and every piece of proof is the real product: a live month calendar for a real room, building names and room counts from the database, and booking rules read from constants. Its illustrations are inert arrangements of the app's own shadcn components, so what the page shows is what the app does.\n\nRejected on purpose: the generic dashboard (KPI cards, card grids of rooms, gradient heroes, icon-led navigation) and any novelty metaphor layered over booking.",
+    "keyCharacteristics": [
+      "White surfaces on a cool canvas, separated by hairline borders rather than shadows (app surfaces); ring-and-soft-shadow cards on the marketing surface.",
+      "One near-black primary for actions, selection, \"mine\", and toasts.",
+      "Four-step text grays; bold 700 is the only emphasis weight.",
+      "Status legible in words and pattern, never color alone.",
+      "Thai copy, Buddhist-era years, 24-hour tabular times.",
+      "Marketing proof is real system data rendered through real components; never claims."
+    ],
+    "rules": [
+      {
+        "name": "The One Ink Rule",
+        "body": "Ink Navy is the only saturated-dark fill in the product. If something is solid near-black, it is either an action, the user's selection, or the user's own booking.",
+        "section": "colors"
+      },
+      {
+        "name": "The Reservation Tone Rule",
+        "body": "On the availability board and booker: mine is solid Ink Navy, pending is Attention Apricot with diagonal stripes and an apricot hairline, approved (someone else's) is flat Emphasis Gray, and past or closed is flat Cool Canvas. Free is white with a Field Stroke edge. These four tones are fixed; do not add more.",
+        "section": "colors"
+      },
+      {
+        "name": "The Words-First Status Rule",
+        "body": "Every tone carries its label in text (\"รออนุมัติ\", \"อนุมัติแล้ว\", \"การจองของคุณ\"), and the board always shows a legend. Color and stripes reinforce the word; they never replace it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Weights Rule",
+        "body": "Only 400 and 700 exist. Emphasis is Bold or a darker gray step; there is no medium, semibold, or extra-bold.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Time Rule",
+        "body": "Every time, date number, count, capacity, and room code uses tabular figures. Times are 24-hour (\"13:00–15:00 น.\"), years are Buddhist era (\"2569\"), and Thai weekday and month names come from the fixed tables in the format library, never from Intl, so server and client render identical text.",
+        "section": "typography"
+      },
+      {
+        "name": "The Thai Copy Rule",
+        "body": "All UI copy is Thai. The product name \"RoomReserve\" is the only English string by design.",
+        "section": "typography"
+      },
+      {
+        "name": "The Scoped Scale Rule",
+        "body": "The marketing steps (2rem and up) appear only on the marketing surface. An app page that needs a size above 1.5rem is a sign the page is doing marketing work.",
+        "section": "typography"
+      },
+      {
+        "name": "The State-in-the-URL Rule",
+        "body": "Date, building, capacity, equipment, and tab selections live in the query string so every view is linkable and the back button works.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Container Rule (app surfaces)",
+        "body": "On app surfaces, cards, the board, the booker, and lists never take a shadow. A bordered white box on canvas is the container. The marketing surface is exempt; its cards carry the card ring instead of a border.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Pressable Lift Rule (app surfaces)",
+        "body": "On app surfaces only buttons get lift. If it is not clickable, it is not raised. On the marketing surface the card ring is the only shadow on non-interactive surfaces.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Container Shadow Rule (marketing)",
+        "body": "Marketing cards use `--shadow-card` and nothing else: no border on the card, no stacked or colored shadows, no hover lift.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do build every control from the shadcn/ui primitives in the project, restyled only through these tokens.",
+      "Do use LINE Seed Sans TH at 400 and 700 only, with the opened Thai line heights.",
+      "Do keep Ink Navy for actions, selection, \"mine\", and toasts, and keep the four reservation tones exactly as defined.",
+      "Do pair every status color or pattern with its Thai word.",
+      "Do use tabular figures, 24-hour times, Buddhist-era years, and the fixed Thai name tables for dates.",
+      "Do separate with 1px hairlines on white over canvas on app surfaces; reserve shadow there for buttons and floating layers.",
+      "Do give every marketing card the card ring (`--shadow-card`) and the scoped radius: 12px for hero and CTA (`rounded-hero`), 16px for content cards (`rounded-card`).",
+      "Do keep marketing content inside the 1200px frame and the 1048px column, with full-bleed section rules and \"+\" marks at the guides.",
+      "Do build marketing proof from real data (a real room, buildings, counts, constants) and draw illustrations from the real shadcn components, marked inert.",
+      "Do use numbered step chips only where the sequence matters."
+    ],
+    "donts": [
+      "Don't add icons beyond chevrons, the sidebar trigger, and the functional marks shadcn primitives carry internally (check, close, spinner). No label icons, no icon-led nav, no emoji.",
+      "Don't use weights other than 400 and 700, or any other typeface.",
+      "Don't introduce KPI cards, room card grids, color gradients, or decorative color. The Hairline board-grid pattern behind the marketing CTA is the one exception, and it stays there.",
+      "Don't shadow a container or card on app surfaces.",
+      "Don't put eyebrow or kicker pills above headings on any surface.",
+      "Don't add testimonials, logo strips, invented statistics, or claims to the marketing surface; if the database or constants cannot back it, it does not ship.",
+      "Don't use the marketing type steps (2rem and up) or the marketing radii on app surfaces.",
+      "Don't format Thai dates with Intl or toLocale APIs in rendered UI.",
+      "Don't show the author's personal name anywhere in the UI, copy, or metadata.",
+      "Don't copy Cal.com's logo, name, imagery, or copy."
+    ]
+  }
+}

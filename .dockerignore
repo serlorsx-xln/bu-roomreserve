@@ -1,0 +1,13 @@
+# ไฟล์ที่ไม่ต้องใส่ใน Docker image
+node_modules
+.next
+.git
+._*
+*.log
+prisma/dev.db*
+data
+.env*
+!.env.example
+README.md
+DESIGN.md
+.impeccable

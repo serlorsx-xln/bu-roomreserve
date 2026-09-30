@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // ไฟล์ metadata ที่ macOS สร้างบนไดรฟ์ภายนอก (ไม่ใช่โค้ด)
+    "**/._*",
   ]),
 ]);
 

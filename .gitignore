@@ -21,8 +21,11 @@
 /build
 
 # misc
-.DS_Store
 *.pem
+
+# SQLite database (สร้างใหม่ได้ด้วย npm run db:setup)
+/prisma/*.db
+/prisma/*.db-journal
 
 # debug
 npm-debug.log*
@@ -39,3 +42,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# macOS metadata files on external drives
+._*
+.DS_Store
