@@ -5,8 +5,10 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 # ติดตั้ง dependencies ก่อน เพื่อใช้แคชของ Docker เมื่อ package.json ไม่เปลี่ยน
+# --include=dev: บังคับติดตั้ง devDependencies เสมอ แม้ NODE_ENV=production ถูกส่งเข้ามาตอน build
+# (Coolify ตั้ง NODE_ENV=production แบบ "Available at Buildtime" ซึ่งทำให้ npm ci ข้าม devDeps)
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --include=dev
 
 # คอมไพล์แอป (output: "standalone" ใน next.config.ts)
 COPY . .
