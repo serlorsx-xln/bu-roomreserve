@@ -30,7 +30,7 @@ import {
 import { ROLE_LABEL } from "@/lib/constants";
 import { availabilityHref } from "@/lib/routes";
 
-type SidebarUser = { fullName: string; email: string; role: UserRole } | null;
+type SidebarUser = { id: string; fullName: string; role: UserRole; facultyName: string | null } | null;
 
 type NavItem = { href: string; label: string; badge?: number };
 
@@ -138,8 +138,11 @@ function UserMenu({ user }: { user: NonNullable<SidebarUser> }) {
       <DropdownMenuContent align="start" side="top" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="font-normal">
-            <span className="block text-xs text-muted-foreground">เข้าสู่ระบบด้วย</span>
-            <span className="block truncate text-sm text-foreground">{user.email}</span>
+            <span className="block text-xs text-muted-foreground">เข้าสู่ระบบด้วยรหัส</span>
+            <span className="block truncate text-sm text-foreground tabular-nums">{user.id}</span>
+            {user.facultyName ? (
+              <span className="mt-0.5 block truncate text-xs text-muted-foreground">{user.facultyName}</span>
+            ) : null}
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

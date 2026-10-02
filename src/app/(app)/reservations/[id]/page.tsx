@@ -1,5 +1,5 @@
-// หน้ารายละเอียดการจอง — ใช้เป็นหน้ายืนยันหลังส่งคำขอด้วย (?created=1)
-// ดูได้เฉพาะเจ้าของการจองและผู้ดูแลระบบ
+// หน้ารายละเอียดใบจอง (และใบยกเลิกถ้ามี) — ใช้เป็นหน้ายืนยันหลังส่งคำขอด้วย (?created=1)
+// ดูได้เฉพาะเจ้าของใบจองและผู้ดูแลระบบ
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,7 +39,7 @@ const HEADLINE: Record<DisplayStatus, { title: string; body: React.ReactNode }> 
   },
   CANCELLED: {
     title: "การจองนี้ถูกยกเลิกแล้ว",
-    body: "ช่วงเวลานี้เปิดให้ผู้อื่นจองได้แล้ว",
+    body: "ออกใบยกเลิกแล้ว ห้องกลับเป็นว่างและช่วงเวลานี้เปิดให้ผู้อื่นจองได้",
   },
   EXPIRED: {
     title: "คำขอนี้หมดอายุแล้ว",
@@ -62,14 +62,15 @@ export default async function ReservationPage({
   const user = await requireUser(`/reservations/${id}`);
 
   const reservationId = Number(id);
-  // SQL: SELECT ... JOIN rooms/buildings/users (ผู้จอง + ผู้อนุมัติ) WHERE reservation_id = ?
+  // SQL: SELECT ... JOIN rooms/buildings/users (ผู้จอง + ผู้อนุมัติ + ผู้ยกเลิก)/cancellations WHERE reservation_id = ?
   const reservation = Number.isInteger(reservationId) ? findReservationDetail(reservationId) : null;
 
   // ไม่ใช่เจ้าของและไม่ใช่ผู้ดูแลระบบ → ทำเหมือนไม่พบ
-  if (!reservation || (reservation.userId !== user.id && user.role !== "ADMIN")) notFound();
+  if (!reservation || (reservation.reservedById !== user.id && user.role !== "ADMIN")) notFound();
 
   const now = new Date();
-  const isOwner = reservation.userId === user.id;
+  const isOwner = reservation.reservedById === user.id;
+  const cancellation = reservation.cancellation;
   const status = displayStatus(reservation, now);
   const justCreated = created === "1" && status === "PENDING";
   const headline = justCreated
@@ -109,9 +110,13 @@ export default async function ReservationPage({
             <span className="text-muted-foreground">(ห้องรองรับ {reservation.room.capacity} คน)</span>
           </Detail>
           <Detail label="ผู้จอง">
-            {reservation.user.fullName}{" "}
-            <span className="text-muted-foreground">· {ROLE_LABEL[reservation.user.role]}</span>
-            <span className="block text-muted-foreground">{reservation.user.email}</span>
+            {reservation.reservedBy.fullName}{" "}
+            <span className="text-muted-foreground">· {ROLE_LABEL[reservation.reservedBy.role]}</span>
+            <span className="block text-muted-foreground tabular-nums">
+              รหัส {reservation.reservedBy.id}
+              {reservation.reservedBy.facultyName ? ` · ${reservation.reservedBy.facultyName}` : ""}
+            </span>
+            <span className="block text-muted-foreground">{reservation.reservedBy.email}</span>
           </Detail>
           <Detail label="ส่งคำขอเมื่อ">
             {formatDateMedium(reservation.createdAt)} {formatTime(reservation.createdAt)} น.{" "}
@@ -125,10 +130,38 @@ export default async function ReservationPage({
               </span>
             </Detail>
           ) : null}
-          <Detail label="เลขที่การจอง">
-            <span className="tabular-nums">#{reservation.id}</span>
+          <Detail label="เลขที่ใบจอง">
+            <span className="tabular-nums">{reservation.id}</span>
           </Detail>
         </dl>
+
+        {cancellation ? (
+          <>
+            <Separator />
+            <section aria-labelledby="cancellation-title" className="px-6 py-7 md:px-10">
+              <h2 id="cancellation-title" className="mb-5 text-base font-bold text-foreground">
+                ใบยกเลิก
+              </h2>
+              <dl className="grid grid-cols-1 gap-x-6 gap-y-5 text-sm sm:grid-cols-[9rem_1fr]">
+                <Detail label="เลขที่ใบยกเลิก">
+                  <span className="tabular-nums">{cancellation.id}</span>
+                </Detail>
+                <Detail label="ยกเลิกโดย">
+                  {cancellation.cancelledBy.fullName}{" "}
+                  <span className="text-muted-foreground">
+                    · {ROLE_LABEL[cancellation.cancelledBy.role]}
+                    {cancellation.cancelledBy.id === reservation.reservedById ? " (ผู้จอง)" : ""}
+                  </span>
+                  <span className="block text-muted-foreground tabular-nums">รหัส {cancellation.cancelledBy.id}</span>
+                </Detail>
+                <Detail label="ยกเลิกเมื่อ">
+                  {formatDateMedium(cancellation.cancelledAt)} {formatTime(cancellation.cancelledAt)} น.
+                </Detail>
+                <Detail label="เหตุผล">{cancellation.reason ?? <span className="text-muted-foreground">ไม่ระบุ</span>}</Detail>
+              </dl>
+            </section>
+          </>
+        ) : null}
 
         <Separator />
 
@@ -138,12 +171,12 @@ export default async function ReservationPage({
               {user.role === "ADMIN" && !isOwner ? "กลับไปหน้าอนุมัติคำขอ" : "การจองของฉัน"}
             </Button>
             {status === "REJECTED" || status === "CANCELLED" || status === "EXPIRED" ? (
-              <Button variant="outline" render={<Link href={bookRoomHref(reservation.roomId)} />}>
+              <Button variant="outline" render={<Link href={bookRoomHref(reservation.roomCode)} />}>
                 จองห้องนี้อีกครั้ง
               </Button>
             ) : null}
           </div>
-          {canCancel(reservation, user.id, now) ? (
+          {canCancel(reservation, user, now) ? (
             <CancelReservationButton reservationId={reservation.id} summary={summary} size="default" />
           ) : null}
           {canDecide(reservation, user.role, now) ? (

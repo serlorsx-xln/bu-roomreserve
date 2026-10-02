@@ -1,4 +1,4 @@
-// ระบบยืนยันตัวตนแบบง่าย (เพื่อการศึกษา) — เก็บ user id ไว้ใน cookie
+// ระบบยืนยันตัวตนแบบง่าย (เพื่อการศึกษา) — เก็บรหัสผู้ใช้ 10 หลักไว้ใน cookie
 // ระบบจริงควรใช้ session ที่เข้ารหัส/ลงลายมือชื่อ เช่น NextAuth หรือ iron-session
 import { cache } from "react";
 import { cookies } from "next/headers";
@@ -9,10 +9,10 @@ import { availabilityHref } from "@/lib/routes";
 
 const SESSION_COOKIE = "session_user";
 
-/** บันทึก user id ลง cookie หลังเข้าสู่ระบบสำเร็จ */
-export async function createSession(userId: number) {
+/** บันทึกรหัสผู้ใช้ลง cookie หลังเข้าสู่ระบบสำเร็จ */
+export async function createSession(userId: string) {
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, String(userId), {
+  cookieStore.set(SESSION_COOKIE, userId, {
     httpOnly: true,
     sameSite: "lax",
     // ส่ง cookie ผ่าน https เท่านั้นเมื่อเข้าถึงผ่าน https (โดเมนทดสอบเป็น http จึงต้องปิด)
@@ -34,8 +34,8 @@ export async function destroySession() {
  */
 export const getCurrentUser = cache(async (): Promise<User | null> => {
   const cookieStore = await cookies();
-  const userId = Number(cookieStore.get(SESSION_COOKIE)?.value);
-  if (!Number.isInteger(userId) || userId <= 0) return null;
+  const userId = cookieStore.get(SESSION_COOKIE)?.value ?? "";
+  if (!/^\d{10}$/.test(userId)) return null;
   return findUserById(userId);
 });
 

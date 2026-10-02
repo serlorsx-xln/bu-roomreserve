@@ -19,17 +19,15 @@ import { addDays, atHour, isDateKey, toDateKey } from "@/lib/format";
 import { findRoomWithBuilding, getReservations } from "@/lib/db";
 import { firstParam, type SearchParams } from "@/lib/search-params";
 
-type Params = Promise<{ id: string }>;
+type Params = Promise<{ code: string }>;
 // ห่อด้วย cache(): generateMetadata กับตัวหน้าเรียกซ้ำกันใน request เดียว แต่ query ฐานข้อมูลครั้งเดียว
-const findRoom = cache(async (id: string) => {
-  const roomId = Number(id);
-  if (!Number.isInteger(roomId) || roomId <= 0) return null;
-  // SQL: SELECT rooms JOIN buildings WHERE room_id = ?
-  return findRoomWithBuilding(roomId);
+const findRoom = cache(async (code: string) => {
+  // SQL: SELECT rooms JOIN buildings WHERE room_code = ?
+  return findRoomWithBuilding(decodeURIComponent(code));
 });
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const room = await findRoom((await params).id);
+  const room = await findRoom((await params).code);
   return { title: room ? `จองห้อง ${room.code}` : "ไม่พบห้อง" };
 }
 
@@ -40,7 +38,7 @@ export default async function RoomBookingPage({
   params: Params;
   searchParams: SearchParams;
 }) {
-  const room = await findRoom((await params).id);
+  const room = await findRoom((await params).code);
   if (!room) notFound();
 
   const query = await searchParams;
@@ -49,9 +47,9 @@ export default async function RoomBookingPage({
   const maxKey = toDateKey(addDays(now, MAX_ADVANCE_DAYS));
 
   // การจองที่ยังกันเวลาอยู่ ภายในช่วงที่จองได้ (ดึงเฉพาะเวลาและสถานะ ไม่ส่งข้อมูลผู้จองไปเบราว์เซอร์)
-  // SQL: SELECT start_datetime, end_datetime, status WHERE room_id = ? AND status IN (...)
+  // SQL: SELECT ... FROM reservations WHERE room_code = ? AND status IN (...)
   const reservations = getReservations({
-    roomId: room.id,
+    roomCode: room.code,
     statuses: BLOCKING_STATUSES,
     endAfter: now,
     startBefore: atHour(maxKey, 24),
@@ -85,7 +83,6 @@ export default async function RoomBookingPage({
 
       <Booker
         room={{
-          id: room.id,
           code: room.code,
           capacity: room.capacity,
           roomType: room.roomType,

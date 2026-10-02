@@ -3,12 +3,19 @@
 import type { Reservation, ReservationStatus, UserRole } from "@/lib/types";
 import { BLOCKING_STATUSES } from "@/lib/constants";
 
-type RuleInput = Pick<Reservation, "status" | "endAt" | "userId">;
+type RuleInput = Pick<Reservation, "status" | "endAt" | "reservedById">;
 
-/** เจ้าของยกเลิกได้ ถ้ายังรออนุมัติหรืออนุมัติแล้ว และยังไม่ถึงเวลาสิ้นสุด */
-export function canCancel(reservation: RuleInput, userId: number, now = new Date()): boolean {
+/**
+ * ยกเลิกได้ถ้าเป็นเจ้าของใบจองหรือผู้ดูแลระบบ และใบจองยังรออนุมัติหรืออนุมัติแล้ว และยังไม่ถึงเวลาสิ้นสุด
+ * (ใบยกเลิกจะบันทึกว่าใครเป็นคนยกเลิก)
+ */
+export function canCancel(
+  reservation: RuleInput,
+  user: { id: string; role: UserRole },
+  now = new Date()
+): boolean {
   return (
-    reservation.userId === userId &&
+    (reservation.reservedById === user.id || user.role === "ADMIN") &&
     BLOCKING_STATUSES.includes(reservation.status) &&
     reservation.endAt > now
   );

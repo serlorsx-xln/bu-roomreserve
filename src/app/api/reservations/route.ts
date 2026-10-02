@@ -1,9 +1,9 @@
-// API: POST /api/reservations — ส่งคำขอจองห้อง (สถานะเริ่มต้น PENDING)
-// SQL ที่ใช้: SELECT (ห้อง) + SELECT/INSERT ภายในธุรกรรม (createReservationAtomically)
+// API: POST /api/reservations — ออกใบจองห้อง (สถานะเริ่มต้น PENDING) และห้องเปลี่ยนเป็น "ถูกจอง"
+// SQL ที่ใช้: SELECT (ห้อง) + SELECT/INSERT/UPDATE ภายในธุรกรรม (createReservationAtomically)
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isWithinBookingWindow } from "@/lib/availability";
-import { MAX_ADVANCE_DAYS } from "@/lib/constants";
+import { isRoomBookable, MAX_ADVANCE_DAYS } from "@/lib/constants";
 import { createReservationAtomically, findRoomWithBuilding } from "@/lib/db";
 import { atHour } from "@/lib/format";
 import { firstError, reservationSchema } from "@/lib/validation";
@@ -19,11 +19,11 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: firstError(parsed.error) }, { status: 400 });
   }
-  const { roomId, purpose, date, startTime, endTime, attendees } = parsed.data;
+  const { roomCode, purpose, date, startTime, endTime, attendees } = parsed.data;
 
   // 2) SELECT: ห้องต้องมีอยู่และเปิดให้จอง
-  const room = findRoomWithBuilding(roomId);
-  if (!room || room.status !== "AVAILABLE") {
+  const room = findRoomWithBuilding(roomCode);
+  if (!room || !isRoomBookable(room.status)) {
     return NextResponse.json({ error: "ห้องนี้ไม่เปิดให้จองในขณะนี้" }, { status: 400 });
   }
 
@@ -49,8 +49,8 @@ export async function POST(request: Request) {
   //    ตรวจ (SELECT COUNT) และบันทึก (INSERT) ในธุรกรรมเดียวกัน (BEGIN IMMEDIATE … COMMIT)
   //    ถ้ามีคำขอสองรายการเข้ามาพร้อมกัน รายการที่สองต้องรอล็อก แล้วจะเห็นการจองแรกเสมอ
   const reservationId = createReservationAtomically({
-    roomId,
-    userId: user.id,
+    roomCode,
+    reservedById: user.id,
     purpose,
     startAt,
     endAt,

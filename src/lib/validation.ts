@@ -10,9 +10,15 @@ const email = z
   .toLowerCase()
   .pipe(z.email("อีเมลไม่ถูกต้อง").max(120, "อีเมลยาวเกินไป"));
 
+// รหัสผู้ใช้ = รหัสนักศึกษา/รหัสบุคลากร ตัวเลข 10 หลัก (ใช้เข้าสู่ระบบ)
+const userId = z
+  .string({ error: "กรุณากรอกรหัสนักศึกษา/บุคลากร" })
+  .trim()
+  .regex(/^\d{10}$/, "รหัสนักศึกษา/บุคลากรต้องเป็นตัวเลข 10 หลัก");
+
 // ฟอร์มเข้าสู่ระบบ
 export const loginSchema = z.object({
-  email,
+  userId,
   password: z.string({ error: "กรุณากรอกรหัสผ่าน" }).min(1, "กรุณากรอกรหัสผ่าน").max(72, "รหัสผ่านยาวเกินไป"),
 });
 
@@ -23,7 +29,8 @@ export const registerSchema = z.object({
     .trim()
     .min(2, "กรุณากรอกชื่อ-นามสกุล")
     .max(100, "ชื่อ-นามสกุลยาวเกินไป"),
-  studentId: z.string().trim().max(20, "รหัสนักศึกษายาวเกินไป").optional(),
+  userId,
+  facultyId: z.coerce.number({ error: "กรุณาเลือกคณะ" }).int().positive("กรุณาเลือกคณะ"),
   email,
   phone: z.string().trim().max(20, "เบอร์โทรศัพท์ยาวเกินไป").optional(),
   // bcrypt ใช้ได้ไม่เกิน 72 ไบต์
@@ -48,7 +55,7 @@ const dateKey = z
 // ฟอร์มจองห้อง
 export const reservationSchema = z
   .object({
-    roomId: z.coerce.number({ error: "ไม่พบห้องที่เลือก" }).int().positive("ไม่พบห้องที่เลือก"),
+    roomCode: z.string({ error: "ไม่พบห้องที่เลือก" }).trim().min(1, "ไม่พบห้องที่เลือก").max(20),
     purpose: z
       .string({ error: "กรุณาระบุวัตถุประสงค์" })
       .trim()
@@ -74,6 +81,11 @@ export const reservationSchema = z
     message: `จองได้ครั้งละไม่เกิน ${MAX_DURATION_HOURS} ชั่วโมง`,
     path: ["endTime"],
   });
+
+// ยกเลิกการจอง (เหตุผลไม่บังคับ)
+export const cancelSchema = z.object({
+  reason: z.string().trim().max(200, "เหตุผลยาวได้ไม่เกิน 200 ตัวอักษร").optional(),
+});
 
 /** แปลงข้อผิดพลาดของ Zod เป็นข้อความเดียวที่อ่านง่าย */
 export function firstError(error: z.ZodError): string {

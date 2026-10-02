@@ -7,7 +7,7 @@ import { addDays, atHour, fromDateKey, toDateKey } from "@/lib/format";
 export type BookedRange = Pick<Reservation, "startAt" | "endAt" | "status">;
 
 /** ข้อมูลการจองสำหรับวาดตารางห้องว่าง (ต้องรู้วัตถุประสงค์และผู้จองด้วย) */
-export type SlotReservation = BookedRange & Pick<Reservation, "id" | "purpose" | "userId">;
+export type SlotReservation = BookedRange & Pick<Reservation, "id" | "purpose" | "reservedById">;
 
 /** ช่วงเวลา [aStart, aEnd) กับ [bStart, bEnd) ทับกันหรือไม่ */
 export function overlaps(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): boolean {

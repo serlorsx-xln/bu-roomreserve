@@ -2,7 +2,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getCurrentUser } from "@/lib/auth";
-import { countReservations } from "@/lib/db";
+import { countReservations, findFacultyName } from "@/lib/db";
 
 // ทุกหน้าในกลุ่มนี้อ่านข้อมูลจากฐานข้อมูล/cookie แบบเรียลไทม์
 // จึงต้องเรนเดอร์ตอน request (ห้าม prerender ตอน build)
@@ -21,7 +21,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <SidebarProvider style={{ "--sidebar-width": "15rem" } as React.CSSProperties}>
       <AppSidebar
-        user={user ? { fullName: user.fullName, email: user.email, role: user.role } : null}
+        user={
+          user
+            ? { id: user.id, fullName: user.fullName, role: user.role, facultyName: findFacultyName(user.facultyId) }
+            : null
+        }
         pendingCount={pendingCount}
       />
       <SidebarInset className="bg-canvas">

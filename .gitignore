@@ -46,3 +46,5 @@ next-env.d.ts
 # macOS metadata files on external drives
 ._*
 .DS_Store
+/prisma/*.db-shm
+/prisma/*.db-wal

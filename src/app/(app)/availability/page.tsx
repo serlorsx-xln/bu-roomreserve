@@ -33,7 +33,7 @@ export default async function AvailabilityPage({ searchParams }: { searchParams:
 
   const user = await getCurrentUser();
 
-  // ดึงอาคาร → ห้อง → การจองของวันนั้น ในคำสั่งเดียว (ใช้ JOIN ผ่าน include)
+  // ดึงอาคาร → ห้อง → ใบจองของวันนั้น
   // SQL: SELECT buildings / SELECT rooms ตามตัวกรอง / SELECT reservations ของวันนั้น
   const buildingOptions = getBuildings();
   const dayStart = atHour(dateKey, 0);
@@ -50,7 +50,7 @@ export default async function AvailabilityPage({ searchParams }: { searchParams:
       }).map((room) => ({
         ...room,
         reservations: getReservations({
-          roomId: room.id,
+          roomCode: room.code,
           statuses: BLOCKING_STATUSES,
           endAfter: dayStart,
           startBefore: dayEnd,
@@ -65,7 +65,6 @@ export default async function AvailabilityPage({ searchParams }: { searchParams:
       id: building.id,
       name: building.name,
       rooms: building.rooms.map((room) => ({
-        id: room.id,
         code: room.code,
         capacity: room.capacity,
         roomType: room.roomType,

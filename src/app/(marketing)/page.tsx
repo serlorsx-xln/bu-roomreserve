@@ -22,9 +22,9 @@ import { addDays, atHour, toDateKey } from "@/lib/format";
 import { findRoomWithBuilding, getBuildings, getRooms, getReservations } from "@/lib/db";
 import { availabilityHref } from "@/lib/routes";
 
-/** SQL: SELECT room_id FROM rooms WHERE status = 'AVAILABLE' ORDER BY building_id, room_code LIMIT 1 */
-function getRoomsFirstAvailableId(): number {
-  return getRooms({ status: "AVAILABLE" })[0]?.id ?? 0;
+/** SQL: SELECT room_code FROM rooms WHERE status IN ('AVAILABLE', 'RESERVED') ORDER BY building_id, room_code (ห้องแรกที่จองได้) */
+function firstBookableRoomCode(): string {
+  return getRooms({ statuses: ["AVAILABLE", "RESERVED"] })[0]?.code ?? "";
 }
 
 export const metadata: Metadata = {
@@ -44,14 +44,14 @@ export default async function LandingPage() {
     getBuildings(),
     // ห้องตัวอย่างในวิดเจ็ตด้านบน: ห้องแรกที่เปิดให้จอง พร้อมช่วงเวลาที่ถูกจองไปแล้ว
     // SQL: SELECT ห้องแรกที่เปิดให้จอง (ORDER BY building_id, room_code LIMIT 1)
-    findRoomWithBuilding(getRoomsFirstAvailableId()),
+    findRoomWithBuilding(firstBookableRoomCode()),
   ]);
   const signedIn = user !== null;
 
-  // การจองที่ยังกันเวลาอยู่ของห้องตัวอย่าง (SQL: SELECT ... WHERE room_id = ? AND status IN (...) ...)
+  // ใบจองที่ยังกันเวลาอยู่ของห้องตัวอย่าง (SQL: SELECT ... WHERE room_code = ? AND status IN (...) ...)
   const featuredReservations = featuredRoom
     ? getReservations({
-        roomId: featuredRoom.id,
+        roomCode: featuredRoom.code,
         statuses: BLOCKING_STATUSES,
         endAfter: now,
         startBefore: atHour(maxKey, 24),
@@ -89,7 +89,7 @@ export default async function LandingPage() {
                   </Button>
                 ) : (
                   <Button variant="secondary" className="w-full" render={<Link href="/register" />}>
-                    สมัครสมาชิกด้วยอีเมล
+                    สมัครด้วยรหัสนักศึกษา
                     <ChevronRightIcon data-icon="inline-end" />
                   </Button>
                 )}
@@ -103,7 +103,6 @@ export default async function LandingPage() {
               <div className="min-w-0">
                 <HeroBooker
                   room={{
-                    id: featuredRoom.id,
                     code: featuredRoom.code,
                     capacity: featuredRoom.capacity,
                     roomType: featuredRoom.roomType,

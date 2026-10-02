@@ -29,10 +29,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 # โครงสร้างฐานข้อมูล (สร้างตารางตอนเปิดแอปครั้งแรกถ้ายังไม่มี) และสคริปต์เติมข้อมูลตัวอย่าง
 COPY --from=builder --chown=nextjs:nodejs /app/sql ./sql
-COPY --from=builder --chown=nextjs:nodejs /app/scripts/seed-cloud.mjs ./scripts/seed-cloud.mjs
-# bcryptjs สำหรับ seed-cloud.mjs (คัดลอกแบบเจาะจง)
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/seed.mjs ./scripts/seed.mjs
+# bcryptjs สำหรับ scripts/seed.mjs (คัดลอกแบบเจาะจง)
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modules/bcryptjs
-# bcryptjs สำหรับ seed-cloud.mjs (จาก node_modules ของ standalone มีอยู่แล้ว)
 
 # ฐานข้อมูล SQLite อยู่ใน volume เพื่อให้ข้อมูลอยู่รอดตอน container สร้างใหม่
 RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
@@ -44,4 +43,4 @@ EXPOSE 3000
 ENV PORT=3000 HOSTNAME=0.0.0.0
 
 # เติมข้อมูลตัวอย่างเฉพาะเมื่อฐานข้อมูลยังว่าง (ครั้งแรกเท่านั้น) แล้วค่อยเริ่มเซิร์ฟเวอร์
-CMD ["sh", "-c", "node scripts/seed-cloud.mjs && node server.js"]
+CMD ["sh", "-c", "node scripts/seed.mjs --if-empty && node server.js"]

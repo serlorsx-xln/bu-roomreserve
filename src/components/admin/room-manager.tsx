@@ -27,11 +27,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { ROOM_STATUS_LABEL, ROOM_TYPE_LABEL } from "@/lib/constants";
+import { ROOM_TYPE_LABEL } from "@/lib/constants";
 
 type BuildingOption = { id: number; name: string };
 type RoomTypeValue = keyof typeof ROOM_TYPE_LABEL;
-type RoomStatusValue = keyof typeof ROOM_STATUS_LABEL;
 
 async function call(
   method: "POST" | "PATCH" | "DELETE",
@@ -119,7 +118,7 @@ export function RoomForm({ buildings, defaultBuildingId }: { buildings: Building
       toast.error(result.error);
       return;
     }
-    toast.success(`เพิ่มห้อง ${code} แล้ว`);
+    toast.success(`เพิ่มห้อง ${code.toUpperCase()} แล้ว`);
     setCode("");
     setCapacity("");
     router.refresh();
@@ -129,7 +128,14 @@ export function RoomForm({ buildings, defaultBuildingId }: { buildings: Building
     <form onSubmit={submit} className="flex flex-wrap items-end gap-3">
       <Field className="w-36">
         <FieldLabel>รหัสห้อง</FieldLabel>
-        <Input value={code} onChange={(e) => setCode(e.target.value)} required maxLength={20} placeholder="เช่น IF-7M101" />
+        <Input
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          required
+          maxLength={20}
+          pattern="[A-Za-z0-9][A-Za-z0-9\-]{1,19}"
+          placeholder="เช่น A1-105"
+        />
       </Field>
       <Field className="w-28">
         <FieldLabel>ที่นั่ง</FieldLabel>
@@ -172,7 +178,8 @@ export function DeleteRoomButton({
   reason,
 }: {
   kind: "room" | "building";
-  id: number;
+  /** รหัสห้อง (room_code) หรือรหัสอาคาร (building_id) */
+  id: string | number;
   label: string;
   /** เหตุผลที่แสดงในกล่องยืนยัน เช่น จะกระทบอะไรบ้าง */
   reason: string;
@@ -182,7 +189,7 @@ export function DeleteRoomButton({
 
   async function remove() {
     setPending(true);
-    const result = await call("DELETE", undefined, `?kind=${kind}&id=${id}`);
+    const result = await call("DELETE", undefined, `?kind=${kind}&id=${encodeURIComponent(String(id))}`);
     setPending(false);
     if (!result.ok) {
       toast.error(result.error);
@@ -211,33 +218,38 @@ export function DeleteRoomButton({
   );
 }
 
-// ─── ปุ่มเปลี่ยนสถานะห้องเร็ว (แก้ไขแบบ PATCH) ───
-export function RoomStatusSelect({ roomId, status }: { roomId: number; status: RoomStatusValue }) {
+// ─── เปิดใช้งาน / ปิดปรับปรุง (แก้ไขแบบ PATCH) ───
+// ผู้ดูแลระบบตั้งได้แค่ปิดปรับปรุงหรือเปิดใช้งาน — สถานะ "ว่าง/ถูกจอง" ระบบคำนวณจากใบจองให้เอง
+const MAINTENANCE_LABEL = { open: "เปิดใช้งาน", maintenance: "ปิดปรับปรุง" } as const;
+type MaintenanceValue = keyof typeof MAINTENANCE_LABEL;
+
+export function MaintenanceSelect({ roomCode, maintenance }: { roomCode: string; maintenance: boolean }) {
   const router = useRouter();
-  const [value, setValue] = useState<RoomStatusValue>(status);
+  const initial: MaintenanceValue = maintenance ? "maintenance" : "open";
+  const [value, setValue] = useState<MaintenanceValue>(initial);
   const [pending, setPending] = useState(false);
 
-  async function change(next: string) {
-    setValue(next as RoomStatusValue);
+  async function change(next: MaintenanceValue) {
+    setValue(next);
     setPending(true);
-    const result = await call("PATCH", { kind: "room", id: roomId, status: next });
+    const result = await call("PATCH", { kind: "room", code: roomCode, maintenance: next === "maintenance" });
     setPending(false);
     if (!result.ok) {
       toast.error(result.error);
-      setValue(status);
+      setValue(initial);
       return;
     }
-    toast.success("เปลี่ยนสถานะห้องแล้ว");
+    toast.success(next === "maintenance" ? `ปิดห้อง ${roomCode} เพื่อปรับปรุงแล้ว` : `เปิดใช้งานห้อง ${roomCode} แล้ว`);
     router.refresh();
   }
 
   return (
-    <Select value={value} onValueChange={(v) => v !== null && change(v)} disabled={pending}>
-      <SelectTrigger size="sm" aria-label="เปลี่ยนสถานะห้อง" className="w-36">
-        <SelectValue>{ROOM_STATUS_LABEL[value]}</SelectValue>
+    <Select value={value} onValueChange={(v) => v !== null && change(v as MaintenanceValue)} disabled={pending}>
+      <SelectTrigger size="sm" aria-label={`เปิด/ปิดห้อง ${roomCode}`} className="w-36">
+        <SelectValue>{MAINTENANCE_LABEL[value]}</SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {Object.entries(ROOM_STATUS_LABEL).map(([key, label]) => (
+        {Object.entries(MAINTENANCE_LABEL).map(([key, label]) => (
           <SelectItem key={key} value={key}>{label}</SelectItem>
         ))}
       </SelectContent>

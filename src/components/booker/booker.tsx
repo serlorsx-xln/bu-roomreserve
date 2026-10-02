@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { RoomStatus, RoomType } from "@/lib/types";
 import { RoomCalendar } from "@/components/booker/room-calendar";
+import { RoomStatusBadge } from "@/components/room-status";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { buildStartOptions, hasAvailability, type BookedRange } from "@/lib/availability";
 import {
   DURATION_OPTIONS,
+  isRoomBookable,
   PURPOSE_PRESETS,
   ROOM_STATUS_LABEL,
   ROOM_TYPE_LABEL,
@@ -34,7 +36,6 @@ import {
 import { availabilityHref, reservationHref } from "@/lib/routes";
 
 export type BookerRoom = {
-  id: number;
   code: string;
   capacity: number;
   roomType: RoomType;
@@ -67,7 +68,7 @@ export function Booker({ room, reservations, signedIn, todayKey, maxKey, initial
     DURATION_OPTIONS.includes(initial.duration as never) ? initial.duration! : 1
   );
   const isBookable = (key: string, hours = duration) =>
-    room.status === "AVAILABLE" && windowKeys.includes(key) && hasAvailability(key, reservations, hours);
+    isRoomBookable(room.status) && windowKeys.includes(key) && hasAvailability(key, reservations, hours);
 
   const [dateKey, setDateKey] = useState<string>(() => {
     if (initial.dateKey && isBookable(initial.dateKey)) return initial.dateKey;
@@ -108,7 +109,7 @@ export function Booker({ room, reservations, signedIn, todayKey, maxKey, initial
           selected={start !== null ? { date: formatDateLong(fromDateKey(dateKey)), range: selectedRange! } : null}
         />
 
-        {room.status !== "AVAILABLE" ? (
+        {!isRoomBookable(room.status) ? (
           <ClosedPanel status={room.status} />
         ) : start === null ? (
           <>
@@ -142,7 +143,7 @@ export function Booker({ room, reservations, signedIn, todayKey, maxKey, initial
           />
         ) : (
           <SignInPanel
-            returnTo={`/rooms/${room.id}?date=${dateKey}&start=${start}&duration=${duration}`}
+            returnTo={`/rooms/${encodeURIComponent(room.code)}?date=${dateKey}&start=${start}&duration=${duration}`}
             onBack={() => setStart(null)}
           />
         )}
@@ -177,7 +178,10 @@ function RoomPanel({
         <MetaRow label="การอนุมัติ">ต้องรอผู้ดูแลระบบอนุมัติ</MetaRow>
         <MetaRow label="ความจุ">{room.capacity} ที่นั่ง</MetaRow>
         <MetaRow label="อุปกรณ์">{equipment.length > 0 ? equipment.join(" · ") : "ไม่มีอุปกรณ์นำเสนอ"}</MetaRow>
-        {room.status === "AVAILABLE" ? (
+        <MetaRow label="สถานะห้อง">
+          <RoomStatusBadge status={room.status} />
+        </MetaRow>
+        {isRoomBookable(room.status) ? (
           <MetaRow label="ระยะเวลา">
             <ToggleGroup
               variant="outline"
@@ -354,7 +358,7 @@ function RequestForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          roomId: room.id,
+          roomCode: room.code,
           purpose,
           date: dateKey,
           startTime: formatHour(start),

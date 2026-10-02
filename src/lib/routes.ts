@@ -5,9 +5,9 @@ export function availabilityHref(dateKey?: string): string {
   return dateKey ? `/availability?date=${dateKey}` : "/availability";
 }
 
-/** ลิงก์ไปหน้าจองห้อง เช่น /rooms/3?date=2026-10-01&start=13&duration=2 */
+/** ลิงก์ไปหน้าจองห้อง เช่น /rooms/A1-101?date=2026-10-01&start=13&duration=2 */
 export function bookRoomHref(
-  roomId: number,
+  roomCode: string,
   dateKey?: string,
   startHour?: number,
   durationHours?: number
@@ -17,7 +17,7 @@ export function bookRoomHref(
   if (startHour !== undefined) params.set("start", String(startHour));
   if (durationHours !== undefined) params.set("duration", String(durationHours));
   const query = params.toString();
-  return `/rooms/${roomId}${query ? `?${query}` : ""}`;
+  return `/rooms/${encodeURIComponent(roomCode)}${query ? `?${query}` : ""}`;
 }
 
 /** ลิงก์ไปหน้ารายละเอียดการจอง */

@@ -52,26 +52,26 @@ export default async function MyReservationsPage({ searchParams }: { searchParam
   const includePast = tab === "past" || tab === "cancelled";
   const newestFirst = includePast;
 
-  // SQL: SELECT reservations JOIN rooms/buildings/users WHERE user_id = ? AND status IN (...) ...
+  // SQL: SELECT reservations JOIN rooms/buildings/users/cancellations WHERE reserved_by = ? AND status IN (...) ...
   // แท็บ "ยกเลิก/ไม่อนุมัติ" รวมคำขอ PENDING ที่เลยเวลาแล้ว (หมดอายุ) ด้วย
   const cancelledExpired = countReservations({
-    userId: user.id, statuses: ["PENDING"], endAtOrBefore: now,
+    reservedById: user.id, statuses: ["PENDING"], endAtOrBefore: now,
   });
   const reservations = tab === "cancelled"
     ? [
-        ...findReservationsWithDetails({ userId: user.id, statuses: statuses.cancelled, order: "start_desc" }),
-        ...findReservationsWithDetails({ userId: user.id, statuses: ["PENDING"], endAtOrBefore: now, order: "start_desc" }),
+        ...findReservationsWithDetails({ reservedById: user.id, statuses: statuses.cancelled, order: "start_desc" }),
+        ...findReservationsWithDetails({ reservedById: user.id, statuses: ["PENDING"], endAtOrBefore: now, order: "start_desc" }),
       ]
     : findReservationsWithDetails({
-        userId: user.id,
+        reservedById: user.id,
         statuses: statuses[tab],
         ...(includePast ? { endAtOrBefore: now } : { endAfter: now }),
         order: newestFirst ? "start_desc" : "start_asc",
       });
-  const upcoming = countReservations({ userId: user.id, statuses: ["APPROVED"], endAfter: now });
-  const pending = countReservations({ userId: user.id, statuses: ["PENDING"], endAfter: now });
-  const past = countReservations({ userId: user.id, statuses: ["APPROVED"], endAtOrBefore: now });
-  const cancelled = countReservations({ userId: user.id, statuses: ["CANCELLED", "REJECTED"] }) + cancelledExpired;
+  const upcoming = countReservations({ reservedById: user.id, statuses: ["APPROVED"], endAfter: now });
+  const pending = countReservations({ reservedById: user.id, statuses: ["PENDING"], endAfter: now });
+  const past = countReservations({ reservedById: user.id, statuses: ["APPROVED"], endAtOrBefore: now });
+  const cancelled = countReservations({ reservedById: user.id, statuses: ["CANCELLED", "REJECTED"] }) + cancelledExpired;
 
   const canCancel = tab === "upcoming" || tab === "pending";
 

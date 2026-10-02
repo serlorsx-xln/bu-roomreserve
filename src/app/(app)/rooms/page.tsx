@@ -4,9 +4,10 @@ import Link from "next/link";
 import { PageContainer, PageHeader } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ROOM_STATUS_LABEL, ROOM_TYPE_LABEL } from "@/lib/constants";
+import { isRoomBookable, ROOM_TYPE_LABEL } from "@/lib/constants";
 import { getBuildings, getRooms } from "@/lib/db";
 import { bookRoomHref } from "@/lib/routes";
+import { RoomStatusBadge } from "@/components/room-status";
 import type { SearchParams } from "@/lib/search-params";
 
 export const metadata: Metadata = { title: "ห้องเรียนทั้งหมด" };
@@ -50,22 +51,18 @@ export default async function RoomsPage({ searchParams }: { searchParams: Search
 
             <ul className="divide-y rounded-lg border bg-card">
               {b.rooms.map((room) => {
-                const bookable = room.status === "AVAILABLE";
+                const bookable = isRoomBookable(room.status);
                 return (
-                  <li key={room.id} className="flex flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4">
+                  <li key={room.code} className="flex flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <Link
-                          href={bookRoomHref(room.id)}
+                          href={bookRoomHref(room.code)}
                           className="text-sm font-bold text-foreground tabular-nums hover:underline"
                         >
                           {room.code}
                         </Link>
-                        {!bookable ? (
-                          <Badge variant="secondary" className="rounded-md">
-                            {ROOM_STATUS_LABEL[room.status]}
-                          </Badge>
-                        ) : null}
+                        <RoomStatusBadge status={room.status} />
                       </div>
                       <div className="mt-1.5 flex flex-wrap gap-1.5">
                         <Badge variant="secondary" className="rounded-md font-normal text-body">
@@ -89,7 +86,7 @@ export default async function RoomsPage({ searchParams }: { searchParams: Search
                     <Button
                       variant={bookable ? "outline" : "ghost"}
                       disabled={!bookable}
-                      render={bookable ? <Link href={bookRoomHref(room.id)} /> : undefined}
+                      render={bookable ? <Link href={bookRoomHref(room.code)} /> : undefined}
                     >
                       {bookable ? "ดูเวลาว่าง" : "ไม่เปิดให้จอง"}
                     </Button>

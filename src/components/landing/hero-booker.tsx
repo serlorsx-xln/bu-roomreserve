@@ -14,7 +14,6 @@ import { addDays, formatHour, fromDateKey, toDateKey } from "@/lib/format";
 import { bookRoomHref } from "@/lib/routes";
 
 export type HeroRoom = {
-  id: number;
   code: string;
   capacity: number;
   roomType: RoomType;
@@ -111,7 +110,7 @@ export function HeroBooker({ room, reservations, todayKey, maxKey }: Props) {
           selectedKey={selectedKey}
           month={month}
           onMonthChange={setMonth}
-          onSelect={(key) => router.push(bookRoomHref(room.id, key, undefined, duration))}
+          onSelect={(key) => router.push(bookRoomHref(room.code, key, undefined, duration))}
           isBookable={isBookable}
           todayKey={todayKey}
           maxKey={maxKey}

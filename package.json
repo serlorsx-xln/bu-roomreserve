@@ -9,8 +9,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "db:setup": "npm run db:reset",
-    "db:reset": "node scripts/db-reset.mjs && tsx scripts/seed.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:reset": "node scripts/db-reset.mjs && node scripts/seed.mjs",
+    "db:seed": "node scripts/seed.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

@@ -8,8 +8,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { availabilityHref } from "@/lib/routes";
+import type { Faculty } from "@/lib/types";
 
 /**
  * หน้าที่จะพากลับไปหลังเข้าสู่ระบบ — อนุญาตเฉพาะหน้าในเว็บนี้ (กันการ redirect ไปเว็บอื่น)
@@ -38,12 +40,12 @@ async function postJson(url: string, body: unknown): Promise<ApiResult> {
   }
 }
 
-// บัญชีทดลองจาก prisma/seed.ts (รหัสผ่านเดียวกันทุกบัญชี)
+// บัญชีทดลองจาก scripts/seed.mjs (รหัสผ่านเดียวกันทุกบัญชี)
 const DEMO_ACCOUNTS = [
-  { label: "ผู้ดูแลระบบ", email: "admin@bu.ac.th" },
-  { label: "อาจารย์", email: "teacher@bu.ac.th" },
-  { label: "เจ้าหน้าที่", email: "staff@bu.ac.th" },
-  { label: "นักศึกษา", email: "student@bu.ac.th" },
+  { label: "ผู้ดูแลระบบ", userId: "5000000001" },
+  { label: "อาจารย์", userId: "5100000001" },
+  { label: "เจ้าหน้าที่", userId: "5200000001" },
+  { label: "นักศึกษา", userId: "1650012345" },
 ];
 const DEMO_PASSWORD = "password123";
 
@@ -64,7 +66,7 @@ function FormError({ message }: { message: string | null }) {
 
 export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -73,7 +75,7 @@ export function LoginForm({ next }: { next?: string }) {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
-    const { ok, data } = await postJson("/api/auth/login", { email, password });
+    const { ok, data } = await postJson("/api/auth/login", { userId, password });
     if (!ok) {
       setSubmitting(false);
       setError(data.error ?? "เข้าสู่ระบบไม่สำเร็จ");
@@ -95,14 +97,16 @@ export function LoginForm({ next }: { next?: string }) {
         <form onSubmit={handleSubmit} className="space-y-5">
           <FieldGroup className="gap-4">
             <Field>
-              <FieldLabel htmlFor="email">อีเมล</FieldLabel>
+              <FieldLabel htmlFor="userId">รหัสนักศึกษา/บุคลากร</FieldLabel>
               <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@bu.ac.th"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="userId"
+                inputMode="numeric"
+                autoComplete="username"
+                placeholder="ตัวเลข 10 หลัก"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                pattern="\d{10}"
+                title="ตัวเลข 10 หลัก"
                 required
               />
             </Field>
@@ -133,12 +137,12 @@ export function LoginForm({ next }: { next?: string }) {
           <div className="mt-2.5 grid grid-cols-2 gap-2">
             {DEMO_ACCOUNTS.map((account) => (
               <Button
-                key={account.email}
+                key={account.userId}
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setEmail(account.email);
+                  setUserId(account.userId);
                   setPassword(DEMO_PASSWORD);
                   setError(null);
                 }}
@@ -165,8 +169,9 @@ export function LoginForm({ next }: { next?: string }) {
 
 // ─── สมัครใช้งาน ───
 
-export function RegisterForm({ next }: { next?: string }) {
+export function RegisterForm({ next, faculties }: { next?: string; faculties: Faculty[] }) {
   const router = useRouter();
+  const [facultyId, setFacultyId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -175,7 +180,12 @@ export function RegisterForm({ next }: { next?: string }) {
     setError(null);
     setSubmitting(true);
     const form = new FormData(event.currentTarget);
-    const { ok, data } = await postJson("/api/auth/register", Object.fromEntries(form));
+    if (!facultyId) {
+      setSubmitting(false);
+      setError("กรุณาเลือกคณะ");
+      return;
+    }
+    const { ok, data } = await postJson("/api/auth/register", { ...Object.fromEntries(form), facultyId });
     if (!ok) {
       setSubmitting(false);
       setError(data.error ?? "สมัครใช้งานไม่สำเร็จ");
@@ -190,7 +200,7 @@ export function RegisterForm({ next }: { next?: string }) {
     <>
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-bold text-foreground">สร้างบัญชีใหม่</h1>
-        <p className="mt-1 text-sm text-muted-foreground">บัญชีใหม่จะเป็นสิทธิ์นักศึกษา ใช้จองห้องได้ทันที</p>
+        <p className="mt-1 text-sm text-muted-foreground">ใช้รหัสนักศึกษา 10 หลักเข้าสู่ระบบ บัญชีใหม่จองห้องได้ทันที</p>
       </div>
 
       <AuthCard>
@@ -202,14 +212,41 @@ export function RegisterForm({ next }: { next?: string }) {
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field>
-                <FieldLabel htmlFor="studentId">รหัสนักศึกษา</FieldLabel>
-                <Input id="studentId" name="studentId" inputMode="numeric" placeholder="ไม่บังคับ" />
+                <FieldLabel htmlFor="userId">รหัสนักศึกษา</FieldLabel>
+                <Input
+                  id="userId"
+                  name="userId"
+                  inputMode="numeric"
+                  autoComplete="username"
+                  placeholder="ตัวเลข 10 หลัก"
+                  pattern="\d{10}"
+                  maxLength={10}
+                  title="ตัวเลข 10 หลัก"
+                  required
+                />
               </Field>
               <Field>
                 <FieldLabel htmlFor="phone">เบอร์โทรศัพท์</FieldLabel>
                 <Input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="ไม่บังคับ" />
               </Field>
             </div>
+            <Field>
+              <FieldLabel htmlFor="facultyId">คณะ</FieldLabel>
+              <Select value={facultyId} onValueChange={(v) => v !== null && setFacultyId(v)}>
+                <SelectTrigger id="facultyId" className="w-full">
+                  <SelectValue placeholder="เลือกคณะ">
+                    {faculties.find((f) => String(f.id) === facultyId)?.name}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {faculties.map((f) => (
+                    <SelectItem key={f.id} value={String(f.id)}>
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field>
               <FieldLabel htmlFor="email">อีเมล</FieldLabel>
               <Input

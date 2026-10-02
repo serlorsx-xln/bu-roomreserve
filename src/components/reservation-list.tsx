@@ -1,11 +1,12 @@
 // รายการการจอง จัดกลุ่มตามวัน (แบบหน้า Bookings ของ Cal.com)
 // ใช้ทั้งหน้า "การจองของฉัน" และหน้า "อนุมัติคำขอ"
 import Link from "next/link";
-import type { ReservationStatus, UserRole } from "@/lib/types";
+import type { ReservationWithDetails } from "@/lib/types";
 import { ReservationStatusBadge } from "@/components/reservation-status";
 import { ROLE_LABEL } from "@/lib/constants";
 import {
   formatDateMedium,
+  formatTime,
   formatDateShort,
   formatTimeAgo,
   formatTimeRange,
@@ -15,18 +16,7 @@ import {
 import { displayStatus } from "@/lib/reservation-rules";
 import { reservationHref } from "@/lib/routes";
 
-export type ListReservation = {
-  id: number;
-  purpose: string;
-  startAt: Date;
-  endAt: Date;
-  attendees: number;
-  status: ReservationStatus;
-  createdAt: Date;
-  decidedAt: Date | null;
-  room: { code: string; capacity: number; building: { name: string } };
-  user: { fullName: string; role: UserRole; email: string };
-};
+export type ListReservation = ReservationWithDetails;
 
 export function ReservationList({
   reservations,
@@ -79,7 +69,18 @@ export function ReservationList({
                   </p>
                   {showRequester ? (
                     <p className="text-sm text-muted-foreground">
-                      {r.user.fullName} · {ROLE_LABEL[r.user.role]} · ส่งคำขอ {formatTimeAgo(r.createdAt, now)}
+                      จองโดย {r.reservedBy.fullName} <span className="tabular-nums">({r.reservedBy.id})</span> ·{" "}
+                      {ROLE_LABEL[r.reservedBy.role]}
+                      {r.reservedBy.facultyName ? ` · ${r.reservedBy.facultyName}` : ""} · ส่งคำขอ{" "}
+                      {formatTimeAgo(r.createdAt, now)}
+                    </p>
+                  ) : null}
+                  {r.cancellation ? (
+                    <p className="text-sm text-muted-foreground">
+                      ใบยกเลิกเลขที่ <span className="tabular-nums">{r.cancellation.id}</span> · ยกเลิกโดย{" "}
+                      {r.cancellation.cancelledBy.id === r.reservedBy.id ? "ผู้จอง" : r.cancellation.cancelledBy.fullName}{" "}
+                      เมื่อ {formatDateShort(r.cancellation.cancelledAt)} {formatTime(r.cancellation.cancelledAt)} น.
+                      {r.cancellation.reason ? ` · ${r.cancellation.reason}` : ""}
                     </p>
                   ) : null}
                 </div>

@@ -3,7 +3,8 @@
 import type { Metadata } from "next";
 import { PageContainer, PageHeader } from "@/components/page";
 import { Badge } from "@/components/ui/badge";
-import { BuildingForm, DeleteRoomButton, RoomForm, RoomStatusSelect } from "@/components/admin/room-manager";
+import { BuildingForm, DeleteRoomButton, MaintenanceSelect, RoomForm } from "@/components/admin/room-manager";
+import { RoomStatusBadge } from "@/components/room-status";
 import { requireAdmin } from "@/lib/auth";
 import { ROOM_TYPE_LABEL } from "@/lib/constants";
 import { getBuildings, getRooms } from "@/lib/db";
@@ -21,7 +22,7 @@ export default async function AdminRoomsPage() {
     <PageContainer className="max-w-[1000px]">
       <PageHeader
         title="จัดการอาคาร/ห้อง"
-        description="เพิ่มอาคารและห้องเรียน เปลี่ยนสถานะห้องเมื่อปิดปรับปรุง และลบข้อมูลที่ไม่ใช้แล้ว ลบได้เฉพาะห้องที่ไม่มีประวัติการจอง"
+        description="เพิ่มอาคารและห้องเรียน ปิดห้องเพื่อปรับปรุง และลบข้อมูลที่ไม่ใช้แล้ว สถานะว่าง/ถูกจองระบบเปลี่ยนให้เองตามใบจอง ลบได้เฉพาะห้องที่ไม่มีประวัติการจอง"
       />
 
       <div className="space-y-8">
@@ -60,8 +61,9 @@ export default async function AdminRoomsPage() {
 
                 <ul className="divide-y">
                   {rooms.map((room) => (
-                    <li key={room.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3">
+                    <li key={room.code} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3">
                       <span className="text-sm font-bold tabular-nums">{room.code}</span>
+                      <RoomStatusBadge status={room.status} />
                       <Badge variant="secondary" className="rounded-md font-normal text-body">
                         {room.capacity} ที่นั่ง
                       </Badge>
@@ -69,12 +71,12 @@ export default async function AdminRoomsPage() {
                         {ROOM_TYPE_LABEL[room.roomType]}
                       </Badge>
                       <div className="ms-auto flex items-center gap-2">
-                        <RoomStatusSelect roomId={room.id} status={room.status} />
+                        <MaintenanceSelect roomCode={room.code} maintenance={room.status === "MAINTENANCE"} />
                         <DeleteRoomButton
                           kind="room"
-                          id={room.id}
+                          id={room.code}
                           label={`ห้อง ${room.code}`}
-                          reason={`จะลบห้อง ${room.code} ออกจากระบบ ลบได้เฉพาะห้องที่ไม่มีประวัติการจอง (ห้องที่เคยถูกจองให้เปลี่ยนสถานะเป็น "ปิดใช้งาน" แทน)`}
+                          reason={`จะลบห้อง ${room.code} ออกจากระบบ ลบได้เฉพาะห้องที่ไม่มีประวัติการจอง (ห้องที่เคยถูกจองให้เปลี่ยนเป็น "ปิดปรับปรุง" แทน)`}
                         />
                       </div>
                     </li>

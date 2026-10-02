@@ -49,10 +49,15 @@ export const ROOM_TYPE_LABEL: Record<RoomType, string> = {
 };
 
 export const ROOM_STATUS_LABEL: Record<RoomStatus, string> = {
-  AVAILABLE: "เปิดให้จอง",
+  AVAILABLE: "ว่าง",
+  RESERVED: "ถูกจอง",
   MAINTENANCE: "ปิดปรับปรุง",
-  CLOSED: "ปิดใช้งาน",
 };
+
+/** ห้องเปิดให้จองไหม — ห้องที่ "ถูกจอง" ยังจองช่วงเวลาอื่นได้ ยกเว้นปิดปรับปรุง */
+export function isRoomBookable(status: RoomStatus): boolean {
+  return status !== "MAINTENANCE";
+}
 
 /** คำที่ใช้บ่อยในช่องวัตถุประสงค์ — กดแล้วเติมให้ */
 export const PURPOSE_PRESETS = [

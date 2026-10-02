@@ -6,6 +6,7 @@ import { NowLine } from "@/components/availability/now-line";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { RowSegment, SlotReservation } from "@/lib/availability";
 import {
+  isRoomBookable,
   RESERVATION_STATUS_LABEL,
   ROOM_STATUS_LABEL,
   ROOM_TYPE_LABEL,
@@ -16,7 +17,6 @@ import { bookRoomHref } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export type BoardRoom = {
-  id: number;
   code: string;
   capacity: number;
   roomType: RoomType;
@@ -26,7 +26,7 @@ export type BoardRoom = {
 
 export type BoardBuilding = { id: number; name: string; rooms: BoardRoom[] };
 
-type Viewer = { userId: number | null; now: Date };
+type Viewer = { userId: string | null; now: Date };
 
 // คอลัมน์แรก (ชื่อห้อง) กว้างคงที่ ที่เหลือแบ่งเท่า ๆ กัน 12 ชั่วโมง
 const GRID_STYLE = {
@@ -79,9 +79,9 @@ function DesktopBoard({ buildings, dateKey, viewer }: { buildings: BoardBuilding
                 </div>
               </div>
               {building.rooms.map((room) => (
-                <div key={room.id} className="grid border-b last:border-b-0" style={GRID_STYLE}>
+                <div key={room.code} className="grid border-b last:border-b-0" style={GRID_STYLE}>
                   <RoomCell room={room} dateKey={dateKey} />
-                  {room.status !== "AVAILABLE" ? (
+                  {!isRoomBookable(room.status) ? (
                     <ClosedRow status={room.status} />
                   ) : (
                     room.segments.map((segment) => (
@@ -108,7 +108,7 @@ function DesktopBoard({ buildings, dateKey, viewer }: { buildings: BoardBuilding
 function RoomCell({ room, dateKey }: { room: BoardRoom; dateKey: string }) {
   return (
     <Link
-      href={bookRoomHref(room.id, dateKey)}
+      href={bookRoomHref(room.code, dateKey)}
       className="group sticky left-0 z-10 flex flex-col justify-center bg-card px-4 py-2 outline-none hover:bg-canvas focus-visible:bg-canvas focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
     >
       <span className="text-sm font-bold text-foreground tabular-nums group-hover:underline">{room.code}</span>
@@ -148,7 +148,7 @@ function SegmentCell({
   if (segment.kind === "free") {
     return (
       <Link
-        href={bookRoomHref(room.id, dateKey, segment.hour)}
+        href={bookRoomHref(room.code, dateKey, segment.hour)}
         aria-label={`จองห้อง ${room.code} ${formatDateLong(atHour(dateKey, segment.hour))} เวลา ${formatHour(segment.hour)} น.`}
         className="flex h-14 items-center justify-center border-l text-xs text-transparent tabular-nums outline-none transition-colors duration-100 hover:bg-canvas hover:text-muted-foreground focus-visible:bg-canvas focus-visible:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       >
@@ -223,7 +223,7 @@ function MobileBoard({ buildings, dateKey, viewer }: { buildings: BoardBuilding[
           <h2 className="mb-2 text-sm font-bold text-foreground">{building.name}</h2>
           <div className="divide-y rounded-lg border bg-card">
             {building.rooms.map((room) => (
-              <MobileRoomRow key={room.id} room={room} dateKey={dateKey} viewer={viewer} />
+              <MobileRoomRow key={room.code} room={room} dateKey={dateKey} viewer={viewer} />
             ))}
           </div>
         </section>
@@ -235,12 +235,12 @@ function MobileBoard({ buildings, dateKey, viewer }: { buildings: BoardBuilding[
 function MobileRoomRow({ room, dateKey, viewer }: { room: BoardRoom; dateKey: string; viewer: Viewer }) {
   const hours = expandToHours(room.segments);
   const freeCount = hours.filter((h) => h.kind === "free").length;
-  const closed = room.status !== "AVAILABLE";
+  const closed = !isRoomBookable(room.status);
 
   return (
     <div className="px-4 py-3">
       <div className="flex items-baseline justify-between gap-3">
-        <Link href={bookRoomHref(room.id, dateKey)} className="text-sm font-bold text-foreground tabular-nums">
+        <Link href={bookRoomHref(room.code, dateKey)} className="text-sm font-bold text-foreground tabular-nums">
           {room.code}
         </Link>
         <span className="text-xs text-muted-foreground">
@@ -254,7 +254,7 @@ function MobileRoomRow({ room, dateKey, viewer }: { room: BoardRoom; dateKey: st
             return (
               <Link
                 key={cell.hour}
-                href={bookRoomHref(room.id, dateKey, cell.hour)}
+                href={bookRoomHref(room.code, dateKey, cell.hour)}
                 aria-label={`จองห้อง ${room.code} เวลา ${formatHour(cell.hour)} น.`}
                 className="flex h-10 items-center justify-center rounded-md bg-background text-xs text-body tabular-nums ring-1 ring-input ring-inset active:bg-emphasis"
               >
@@ -286,7 +286,7 @@ function MobileRoomRow({ room, dateKey, viewer }: { room: BoardRoom; dateKey: st
 // ─── ส่วนช่วย ───
 
 /** ข้อความสถานะของช่องชั่วโมงบนมือถือ (สำหรับโปรแกรมอ่านหน้าจอ) */
-function mobileCellStatus(cell: HourCell, closed: boolean, userId: number | null): string {
+function mobileCellStatus(cell: HourCell, closed: boolean, userId: string | null): string {
   if (closed) return "ปิด ไม่เปิดให้จอง";
   if (cell.kind === "past") return "ผ่านไปแล้ว";
   if (cell.kind === "reservation") {
@@ -304,8 +304,8 @@ const TONE_STYLE: Record<Tone, string> = {
   approved: "bg-emphasis text-body",
 };
 
-function reservationTone(reservation: SlotReservation, userId: number | null): Tone {
-  if (userId !== null && reservation.userId === userId) return "mine";
+function reservationTone(reservation: SlotReservation, userId: string | null): Tone {
+  if (userId !== null && reservation.reservedById === userId) return "mine";
   return reservation.status === "PENDING" ? "pending" : "approved";
 }
 

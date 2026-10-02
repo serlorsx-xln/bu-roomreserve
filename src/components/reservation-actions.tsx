@@ -1,6 +1,6 @@
 "use client";
 
-// ปุ่มดำเนินการกับการจอง: ยกเลิก (เจ้าของ) / อนุมัติ-ปฏิเสธ (ผู้ดูแลระบบ)
+// ปุ่มดำเนินการกับการจอง: ยกเลิก (เจ้าของหรือผู้ดูแลระบบ → ออกใบยกเลิก) / อนุมัติ-ปฏิเสธ (ผู้ดูแลระบบ)
 // ทุกปุ่มเรียก PATCH /api/reservations/[id] แล้วรีเฟรชข้อมูลบนหน้า
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 
 type Action = "approve" | "reject" | "cancel";
@@ -24,21 +26,21 @@ type Action = "approve" | "reject" | "cancel";
 const SUCCESS_MESSAGE: Record<Action, string> = {
   approve: "อนุมัติคำขอแล้ว",
   reject: "ปฏิเสธคำขอแล้ว",
-  cancel: "ยกเลิกการจองแล้ว",
+  cancel: "ยกเลิกการจองแล้ว ออกใบยกเลิกเรียบร้อย",
 };
 
 function useReservationAction(reservationId: number) {
   const router = useRouter();
   const [running, setRunning] = useState<Action | null>(null);
 
-  async function run(action: Action) {
+  async function run(action: Action, extra: Record<string, string> = {}) {
     setRunning(action);
     let res: Response;
     try {
       res = await fetch(`/api/reservations/${reservationId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, ...extra }),
       });
     } catch {
       setRunning(null);
@@ -69,6 +71,7 @@ export function CancelReservationButton({
   size?: "sm" | "default";
 }) {
   const { running, run } = useReservationAction(reservationId);
+  const [reason, setReason] = useState("");
   return (
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant="outline" size={size} disabled={running !== null} />}>
@@ -79,12 +82,23 @@ export function CancelReservationButton({
         <AlertDialogHeader>
           <AlertDialogTitle>ยกเลิกการจองนี้?</AlertDialogTitle>
           <AlertDialogDescription>
-            {summary} — เมื่อยกเลิกแล้ว ช่วงเวลานี้จะเปิดให้ผู้อื่นจองได้ทันที และไม่สามารถกู้คืนได้
+            {summary} — ระบบจะออกใบยกเลิกที่บันทึกชื่อผู้ยกเลิกและเวลา ห้องจะกลับเป็นว่างให้ผู้อื่นจองได้ทันที
+            และไม่สามารถกู้คืนได้
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <Field>
+          <FieldLabel htmlFor={`cancel-reason-${reservationId}`}>เหตุผลที่ยกเลิก</FieldLabel>
+          <Input
+            id={`cancel-reason-${reservationId}`}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            maxLength={200}
+            placeholder="ไม่บังคับ เช่น เลื่อนวันสอบ"
+          />
+        </Field>
         <AlertDialogFooter>
           <AlertDialogCancel>ไม่ยกเลิก</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={() => run("cancel")}>
+          <AlertDialogAction variant="destructive" onClick={() => run("cancel", reason.trim() ? { reason: reason.trim() } : {})}>
             ยกเลิกการจอง
           </AlertDialogAction>
         </AlertDialogFooter>
